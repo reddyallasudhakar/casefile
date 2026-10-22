@@ -64,7 +64,9 @@ def case(**changes):
     return data
 
 
-VALID_REJECTED = case(approved=0, deductions=[], outcome="rejected")
+VALID_REJECTED = case(
+    approved=0, deductions=[], outcome="rejected", rejection_reason="specific_disease_waiting_period"
+)
 
 SHOULD_PASS = {
     "valid partial settlement": VALID,
@@ -77,7 +79,9 @@ SHOULD_FAIL = {
     "rule 1: discharged before admitted": case(**{"hospitalisation.discharge_date": "2025-08-09"}),
     "rule 2: admitted before policy started": case(**{"policy.inception_date": "2025-09-01"}),
     "rule 3: approved ≠ claimed − deductions": case(approved=140000),
-    "rule 4: rejected but money approved": case(outcome="rejected"),
+    "rule 4: rejected but money approved": case(outcome="rejected", rejection_reason="other"),
+    "rule 5: rejected without a reason": case(approved=0, deductions=[], outcome="rejected"),
+    "rule 5: reason on a non-rejection": case(rejection_reason="non_disclosure"),
     # field-level checks
     "age out of range": case(**{"patient.age": 200}),
     "co-pay over 100%": case(**{"policy.copay_pct": 150}),

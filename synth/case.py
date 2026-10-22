@@ -69,6 +69,17 @@ class Deduction(BaseModel):
     insurer_wording: str  # what the letter actually says
 
 
+RejectionReason = Literal[
+    "initial_waiting_period",  # admitted within the first 30 days
+    "specific_disease_waiting_period",  # e.g. cataract, hernia, joint replacement
+    "pre_existing_disease_waiting_period",
+    "non_disclosure",  # condition not declared at proposal
+    "excluded_treatment",
+    "not_requiring_hospitalisation",  # could have been done as OPD
+    "other",
+]
+
+
 class ClaimCase(BaseModel):
     patient: Person
     policy: Policy
@@ -78,6 +89,15 @@ class ClaimCase(BaseModel):
     approved: float = Field(ge=0)
     deductions: list[Deduction] = []
     outcome: Literal["settled", "partially_settled", "rejected", "query_raised"]
+    rejection_reason: RejectionReason | None = None  # required when outcome is rejected
+
+    @model_validator(mode="after")
+    def reason_only_for_rejections(self):
+        if self.outcome == "rejected" and self.rejection_reason is None:
+            raise ValueError("a rejected claim needs a rejection_reason")
+        if self.outcome != "rejected" and self.rejection_reason is not None:
+            raise ValueError(f"rejection_reason set but outcome is {self.outcome}")
+        return self
 
     @model_validator(mode="after")
     def admitted_after_inception(self):
