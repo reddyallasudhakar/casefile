@@ -38,13 +38,22 @@ LABELS = {
 }
 LABEL_NAMES = sorted(LABELS)
 
-QWEN = "Qwen/Qwen2.5-0.5B-Instruct"
-GEMINI = "gemini-3.5-flash"
+QWEN_SIZES = {"0.5B": "Qwen/Qwen2.5-0.5B-Instruct", "1.5B": "Qwen/Qwen2.5-1.5B-Instruct", "3B": "Qwen/Qwen2.5-3B-Instruct"}
+GEMINI = "gemini-3.5-flash"  # wrote the pages
+GEMINI_PRO = "gemini-3.1-pro-preview"  # a different tier and generation, so not grading its own writing
+
+# Which text a model reads: the clean page, OCR of the degraded image, and either with the
+# type-revealing headings hidden (bench/ocr.py, bench/mask_titles.py).
+VARIANTS = {"clean": ".txt", "masked": ".masked.txt", "ocr": ".ocr.txt", "ocr-masked": ".ocr.masked.txt"}
 
 
-def pages_of(split: str) -> list[tuple[int, str, str]]:
+def pages_of(split: str, variant: str = "clean") -> list[tuple[int, str, str]]:
     """(seed, true doc_type, page text) for every page in the split."""
-    return [(seed, t, Path(r["text"]).read_text()) for (seed, t), r in sorted(test_pages(split).items())]
+    suffix = VARIANTS[variant]
+    return [
+        (seed, t, Path(r["text"]).with_suffix("").with_suffix(suffix).read_text())
+        for (seed, t), r in sorted(test_pages(split).items())
+    ]
 
 
 def prompt(text: str, examples: str = "") -> str:
@@ -100,14 +109,14 @@ def keywords(pages):
 # --- Qwen 0.5B on the Mac -----------------------------------------------------------
 
 
-def load_qwen():
+def load_qwen(name: str = QWEN_SIZES["0.5B"]):
     os.environ.setdefault("HF_HUB_OFFLINE", "1")  # the model is cached; skip the network check
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    tok = AutoTokenizer.from_pretrained(QWEN)
+    tok = AutoTokenizer.from_pretrained(name)
     device = "cuda" if torch.cuda.is_available() else "mps"
-    model = AutoModelForCausalLM.from_pretrained(QWEN, dtype=torch.float32).to(device).eval()
+    model = AutoModelForCausalLM.from_pretrained(name, dtype=torch.float32).to(device).eval()
     return tok, model
 
 
@@ -154,10 +163,10 @@ def few_shot_block() -> str:
     return "\n".join(lines) + "\n\n"
 
 
-def qwen(pages, mode: str):
+def qwen(pages, mode: str, name: str = QWEN_SIZES["0.5B"]):
     import torch
 
-    tok, model = load_qwen()
+    tok, model = load_qwen(name)
     examples = few_shot_block() if mode == "fewshot" else ""
     preds, start = {}, time.time()
     for i, (seed, t, text) in enumerate(pages, 1):
@@ -179,7 +188,7 @@ def qwen(pages, mode: str):
 # --- Gemini Flash ---------------------------------------------------------------------
 
 
-def gemini(pages):
+def gemini(pages, model: str = GEMINI):
     from concurrent.futures import ThreadPoolExecutor
 
     from google.genai import types
@@ -192,7 +201,7 @@ def gemini(pages):
 
     def ask(page):
         seed, t, text = page
-        reply = client().models.generate_content(model=GEMINI, contents=prompt(text), config=config)
+        reply = client().models.generate_content(model=model, contents=prompt(text), config=config)
         u = reply.usage_metadata
         tokens["in"] += u.prompt_token_count or 0
         tokens["out"] += (u.candidates_token_count or 0) + (u.thoughts_token_count or 0)
@@ -208,22 +217,34 @@ def gemini(pages):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("baseline", choices=["majority", "keywords", "qwen-zeroshot", "qwen-zeroshot-gen", "qwen-fewshot", "gemini"])
+    parser.add_argument("baseline", choices=["majority", "keywords", "qwen-zeroshot", "qwen-zeroshot-gen", "qwen-fewshot", "gemini", "gemini-pro"])
     parser.add_argument("--split", default="test", choices=["val", "test"])
+    parser.add_argument("--variant", default="clean", choices=list(VARIANTS))
+    parser.add_argument("--qwen-size", default="0.5B", choices=list(QWEN_SIZES))
     args = parser.parse_args()
 
-    pages = pages_of(args.split)
+    pages = pages_of(args.split, args.variant)
+    qwen_name = QWEN_SIZES[args.qwen_size]
     run = {
         "majority": lambda: majority(pages),
         "keywords": lambda: keywords(pages),
-        "qwen-zeroshot": lambda: qwen(pages, "zeroshot"),
-        "qwen-zeroshot-gen": lambda: qwen(pages, "zeroshot-gen"),
-        "qwen-fewshot": lambda: qwen(pages, "fewshot"),
-        "gemini": lambda: gemini(pages),
+        "qwen-zeroshot": lambda: qwen(pages, "zeroshot", qwen_name),
+        "qwen-zeroshot-gen": lambda: qwen(pages, "zeroshot-gen", qwen_name),
+        "qwen-fewshot": lambda: qwen(pages, "fewshot", qwen_name),
+        "gemini": lambda: gemini(pages, GEMINI),
+        "gemini-pro": lambda: gemini(pages, GEMINI_PRO),
     }[args.baseline]
     preds = run()
 
-    out = Path("preds") / (f"{args.baseline}.jsonl" if args.split == "test" else f"{args.baseline}.{args.split}.jsonl")
+    # e.g. preds/qwen-zeroshot.jsonl, preds/qwen-zeroshot-3B__ocr-masked.jsonl, preds/keywords.val.jsonl
+    name = args.baseline
+    if args.baseline.startswith("qwen") and args.qwen_size != "0.5B":
+        name += f"-{args.qwen_size}"
+    if args.variant != "clean":
+        name += f"__{args.variant}"
+    if args.split != "test":
+        name += f".{args.split}"
+    out = Path("preds") / f"{name}.jsonl"
     out.parent.mkdir(exist_ok=True)
     with out.open("w") as f:
         for (seed, t), p in sorted(preds.items()):

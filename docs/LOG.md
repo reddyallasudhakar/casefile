@@ -244,6 +244,19 @@ probably split across lines. For FairClaims, that argues for **always double-che
 and IDs** (cross-checking bill totals against line items, or asking the user to confirm) rather
 than trusting any single read.
 
+## 2026-10-23: Hiding the titles
+
+`bench/mask_titles.py` replaces heading-like lines that name a type ("CLAIM REPUDIATION
+LETTER", "FINAL INPATIENT BILL", Hindi headings too) with `[heading removed]`. Only short
+lines near the top of the page count as headings; a body sentence like "your claim has been
+repudiated" is content the model should understand, so it stays. That gives four test
+variants per page: **clean, masked, OCR, OCR + masked**. Headings were masked on 755/800 clean
+pages and 669/800 OCR pages (OCR breaks some headings so they no longer match).
+
+First surprise: hiding titles barely moves the keyword rules (54.8% → 52.4% clean, 51.6% for
+OCR + masked). They key on body words, not headings. Whether the *models* were leaning on
+titles is what the next baseline round will show.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first
