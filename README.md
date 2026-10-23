@@ -20,7 +20,7 @@ in the **[research log](docs/LOG.md)**.
 | Stage | What | State |
 |---|---|---|
 | Synthetic data | 800 claim pages (10 document types × 80) generated from 314 sampled claim cases, each with a clean render and a phone-photo or scanner copy | ✅ done |
-| F2: document type | Classify a page into 10 types; baselines → LoRA fine-tune → compare with Gemini | 🔄 test set frozen, success bar set ([results/f2.md](results/f2.md)) |
+| F2: document type | Classify a page into 10 types; baselines → LoRA fine-tune → compare with Gemini | 🔄 baselines done: Qwen 0.5B 27%, keywords 55%, Gemini 100% ([results/f2.md](results/f2.md)); fine-tuning next |
 | F0: reading | Which OCR reads amounts, dates and policy numbers correctly | ⏳ next |
 | Later | Field extraction, deduction checks with a rules engine, RL with verifiable rewards | planned |
 

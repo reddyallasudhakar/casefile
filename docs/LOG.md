@@ -142,6 +142,50 @@ was right say anything about who is better.
 Checked on planted predictions: 15 planted errors gave exactly 109/124; a perfect file
 scores 100%; the McNemar p-values match hand calculations (9 vs 2 → 0.065, 10 vs 1 → 0.012).
 
+## 2026-10-23: First baselines, and a problem with the test set
+
+The "before" numbers on the 124 test pages, given clean page text:
+
+| Model | Accuracy |
+|---|---|
+| Always the most common type | 8.9% |
+| Keyword rules (written once, from the label guide, not tuned) | 54.8% |
+| Qwen 0.5B zero-shot (label scoring) | 27.4% |
+| Gemini Flash zero-shot | **100%** |
+
+Untrained, Qwen 0.5B **collapses onto two labels**: nearly everything is called
+`policy_schedule` or `health_card`. It loses even to keyword rules.
+
+Gemini's 100% worries me more than it impresses me. **Gemini wrote these documents.** It
+generated each page from a description of its type, and many pages name their type in the
+title. Asking Gemini to classify them is close to marking its own homework. It also turns
+my success bar ("match or beat Gemini") into "reach 100%". I need a harder, less circular
+test before trusting this comparison: OCR'd text from the degraded images, documents
+written by a different model, or real pages.
+
+## 2026-10-23: Model work moves off my laptop
+
+The Qwen few-shot baseline slowed my Mac badly, and got slower as it ran (16 → 50 s per
+page as the machine throttled). From now on, all model work runs on GCP. I compared the
+options before spending anything ([COSTS.md](COSTS.md)): an **L4 Spot VM with a 4-hour
+auto-stop**, at ~$0.25–0.42/hour. F2 should cost $1–2 in GPU time; the biggest real risk
+to the budget is a forgotten VM, so the auto-stop matters more than the hourly rate.
+
+## 2026-10-23: The full "before" table, and the first GPU VM
+
+The last two Qwen baselines ran on the new L4 Spot VM in under a minute each: 0.4 s per page,
+against up to 50 s per page on my Mac. The VM was stopped straight after.
+
+- **Few-shot didn't help** (25.8% vs 27.4% zero-shot): one short example per type isn't
+  enough for a 0.5B model.
+- **The most telling detail:** when allowed to answer freely, Qwen's "invalid" answers were
+  semantically right in the wrong format: `claim_repudiation_letter` for a rejection letter,
+  `claim_query_letter` for a query letter. So the small model partly understands the pages;
+  it just doesn't know my label set. That's precisely what fine-tuning teaches, which makes
+  me optimistic about the jump from ~27%.
+
+Full table: [results/f2.md](../results/f2.md).
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first
