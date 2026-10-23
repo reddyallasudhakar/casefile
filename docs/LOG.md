@@ -186,6 +186,64 @@ against up to 50 s per page on my Mac. The VM was stopped straight after.
 
 Full table: [results/f2.md](../results/f2.md).
 
+## 2026-10-23: Why own a model at all, when APIs are this cheap?
+
+I asked how API providers can sell inference so cheaply, and whether self-hosting ever pays.
+What I learned:
+
+- **Providers batch many customers onto each GPU.** Generating a token streams all of the
+  model's weights from memory once, and that one pass can produce the next token for ~100
+  conversations nearly as cheaply as for one. Our own L4 serving one request at a time
+  works out to ~$6.50 per million tokens; the same GPU batched across ~50 conversations,
+  ~$0.13. Add always-busy GPUs, prefix caching, 8-bit weights and bulk hardware deals.
+- **Fine-tuning a small model is cheap** (F2 will cost under $2). The costly part of owning a
+  model is **keeping a GPU running for serving**, plus the engineering time to maintain it.
+- **On cost alone, an API wins at FairClaims' current volume** (~10k pages a month ≈ $6–30 on
+  Gemini Flash). A always-on L4 (~$500/month) only breaks even at hundreds of thousands of
+  pages a month.
+
+**So why do this?** For FairClaims, the reason is **privacy and compliance, not cost**. Claim
+files are health data under India's DPDP Act, and insurers, TPAs and brokers increasingly
+want that data to stay inside their own cloud. A small model we own can run inside a client's
+VPC, or even on-device; an API call can't. Casefile is the evidence that a small model is
+good enough to make that offer.
+
+How I'll serve it when the time comes: a scale-to-zero GPU service or a CPU for a tiny model
+(near-zero fixed cost), several task-specific LoRA adapters on one base model so a single
+server handles all tasks, and a cascade that sends uncertain pages to a bigger model.
+
+## 2026-10-23: Hardening the test without making new pages
+
+I decided not to generate new pages from a different writer model. Instead, the hard
+versions of the test come from what we already have:
+
+1. **OCR text:** each page's degraded phone or scan image, read by Google Cloud Vision.
+2. **Hidden titles:** type-revealing headings masked.
+3. **A different frontier reader:** Gemini 3.1 Pro joins as the frontier baseline, so the
+   frontier score isn't only Gemini 3.5 Flash grading pages it wrote itself. Pro will likely
+   hit 100% on clean text too; the hard variants are where models should separate.
+
+**Known limitation I'm accepting for now:** training and test pages share one writer
+(Gemini 3.5 Flash), so a fine-tuned model could partly learn that writer's style rather than
+the document types. The real test of that is real pages, later.
+
+**OCR results** (all 800 pages, ~6 minutes, free within Cloud Vision's monthly 1,000-page tier).
+Share of key facts that survive OCR, counting only facts present in the clean text:
+
+| Fact | Phone photos | Scans |
+|---|---|---|
+| Patient name | 99.7% | 100% |
+| Policy number | 99.1% | 100% |
+| Claimed amount | 98.8% | 98.7% |
+| Approved amount | 97.4% | 97.6% |
+
+Much better than I expected. But the misses are telling: one policy number came back with
+**a 6 read as an 8** (`626455` → `826455`), a plausible-looking single-digit error, which is
+exactly the kind that silently breaks a claim. Amounts are the weakest field (~2–3% lost),
+probably split across lines. For FairClaims, that argues for **always double-checking amounts
+and IDs** (cross-checking bill totals against line items, or asking the user to confirm) rather
+than trusting any single read.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first
