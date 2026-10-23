@@ -109,15 +109,20 @@ def keywords(pages):
 # --- Qwen 0.5B on the Mac -----------------------------------------------------------
 
 
-def load_qwen(name: str = QWEN_SIZES["0.5B"]):
+def load_qwen(name: str = QWEN_SIZES["0.5B"], adapter: Path | None = None):
     os.environ.setdefault("HF_HUB_OFFLINE", "1")  # the model is cached; skip the network check
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     tok = AutoTokenizer.from_pretrained(name)
     device = "cuda" if torch.cuda.is_available() else "mps"
-    model = AutoModelForCausalLM.from_pretrained(name, dtype=torch.float32).to(device).eval()
-    return tok, model
+    model = AutoModelForCausalLM.from_pretrained(name, dtype=torch.float32).to(device)
+    if adapter:
+        from peft import PeftModel
+
+        # Fold the LoRA matrices into the base weights, so inference is as fast as the base model.
+        model = PeftModel.from_pretrained(model, adapter).merge_and_unload()
+    return tok, model.eval()
 
 
 def qwen_label_scores(tok, model, user_message: str) -> dict[str, float]:
@@ -163,10 +168,10 @@ def few_shot_block() -> str:
     return "\n".join(lines) + "\n\n"
 
 
-def qwen(pages, mode: str, name: str = QWEN_SIZES["0.5B"]):
+def qwen(pages, mode: str, name: str = QWEN_SIZES["0.5B"], adapter: Path | None = None):
     import torch
 
-    tok, model = load_qwen(name)
+    tok, model = load_qwen(name, adapter)
     examples = few_shot_block() if mode == "fewshot" else ""
     preds, start = {}, time.time()
     for i, (seed, t, text) in enumerate(pages, 1):
@@ -217,7 +222,7 @@ def gemini(pages, model: str = GEMINI):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("baseline", choices=["majority", "keywords", "qwen-zeroshot", "qwen-zeroshot-gen", "qwen-fewshot", "gemini", "gemini-pro"])
+    parser.add_argument("baseline", choices=["majority", "keywords", "qwen-zeroshot", "qwen-zeroshot-gen", "qwen-fewshot", "qwen-finetuned", "gemini", "gemini-pro"])
     parser.add_argument("--split", default="test", choices=["val", "test"])
     parser.add_argument("--variant", default="clean", choices=list(VARIANTS))
     parser.add_argument("--qwen-size", default="0.5B", choices=list(QWEN_SIZES))
@@ -231,6 +236,8 @@ def main():
         "qwen-zeroshot": lambda: qwen(pages, "zeroshot", qwen_name),
         "qwen-zeroshot-gen": lambda: qwen(pages, "zeroshot-gen", qwen_name),
         "qwen-fewshot": lambda: qwen(pages, "fewshot", qwen_name),
+        # same label scoring as zero-shot, with the adapter from bench/finetune.py
+        "qwen-finetuned": lambda: qwen(pages, "zeroshot", qwen_name, Path("adapters") / f"qwen-{args.qwen_size}"),
         "gemini": lambda: gemini(pages, GEMINI),
         "gemini-pro": lambda: gemini(pages, GEMINI_PRO),
     }[args.baseline]
@@ -238,7 +245,7 @@ def main():
 
     # e.g. preds/qwen-zeroshot.jsonl, preds/qwen-zeroshot-3B__ocr-masked.jsonl, preds/keywords.val.jsonl
     name = args.baseline
-    if args.baseline.startswith("qwen") and args.qwen_size != "0.5B":
+    if args.baseline == "qwen-finetuned" or (args.baseline.startswith("qwen") and args.qwen_size != "0.5B"):
         name += f"-{args.qwen_size}"
     if args.variant != "clean":
         name += f"__{args.variant}"

@@ -282,6 +282,29 @@ What I take from it:
 - **The catch-all `other` class is the hardest.** Qwen 3B never predicted it once. Worth
   watching after fine-tuning.
 
+## 2026-10-23: How I'm fine-tuning
+
+`bench/finetune.py`, written before training anything, so the design is fixed in advance:
+
+1. **Examples:** each training page becomes a chat pair: the *same prompt the baselines use*
+   (label definitions + page) → the correct label + Qwen's end-of-turn token. Every page appears
+   in all four variants (clean, masked, OCR, OCR + masked): 2,276 examples, ~2.5M tokens.
+   Showing each page with and without its heading is aimed squarely at the title shortcut
+   the zero-shot runs exposed.
+2. **Loss only on the answer:** prompt tokens are masked with -100, so the model is trained
+   on `discharge_summary<|im_end|>`, not on reproducing page text. It's M1's
+   `completion_logprob`, turned into a training signal.
+3. **LoRA, rank 16,** on every attention and MLP projection (`q/k/v/o_proj`,
+   `gate/up/down_proj`, the layers I looked at in Module 1). The base weights stay frozen;
+   ~0.5–1% of parameters train.
+4. **One epoch** (each page is already seen 4 times), lr 2e-4 with warmup and cosine decay,
+   effective batch 16 via gradient accumulation, bf16 on the L4, gradient checkpointing for
+   the bigger models.
+5. **Validation** on the 107 val pages, hardest variant; **test pages untouched** until the
+   final run, which uses the exact same label-scoring code as the zero-shot baselines.
+
+Same recipe for 0.5B, 1.5B and 3B, so the only thing that changes is model size.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first
