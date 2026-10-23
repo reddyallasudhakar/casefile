@@ -38,7 +38,7 @@ insurers and hospitals are fictional. No real customer data is used anywhere in 
 
 ```
 synth/     case schema, case sampler, document writer, renderer, degrader, generate.py
-bench/     train/val/test split (splits.json is the frozen split)
+bench/     train/val/test split (splits.json is the frozen split), score.py (the one judge for every model)
 results/   one file per task: success bar, baselines, results
 docs/      research log
 ```

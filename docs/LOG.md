@@ -116,6 +116,32 @@ looks only at pages where the two models disagree, and asks whether the split is
 lopsided to be chance. A lower-but-not-significant score is reported as "indistinguishable",
 not as a pass. Details in [results/f2.md](../results/f2.md).
 
+## 2026-10-23: One judge for every model
+
+`bench/score.py` is the single definition of "correct" for F2. Every model writes its
+answers to a predictions file, and this one script grades all of them, so none is scored
+more leniently than another. Choices I made:
+
+- **A missing or malformed answer counts as wrong**, and is reported separately as the
+  *invalid-output rate*. Small models often answer "This appears to be a letter…" instead
+  of a label; hiding that would flatter them.
+- **Accuracy comes with a 95% interval** (Wilson). At 124 pages, 88% really means "somewhere
+  around 81–93%", and I want that uncertainty visible in every row.
+- **Macro-F1 alongside accuracy**, so a model can't look good by mastering the easy types.
+- **The confusion matrix** shows *which* types get mixed up, e.g. rejection letter vs
+  pre-auth denial, the distinction the label guide cares most about.
+- **McNemar's exact test** for comparing two models.
+
+I was confused at first about how McNemar differs from F1, since both involve 2×2 tables.
+The difference: a confusion matrix compares **one model with the truth** (and gives it a
+grade); McNemar's table compares **two models with each other** on the same pages (right
+vs wrong for each). McNemar isn't a grade, it's a test of whether a gap between grades is
+real. Like two students who sat the same exam: only the questions where exactly one of them
+was right say anything about who is better.
+
+Checked on planted predictions: 15 planted errors gave exactly 109/124; a perfect file
+scores 100%; the McNemar p-values match hand calculations (9 vs 2 → 0.065, 10 vs 1 → 0.012).
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first
