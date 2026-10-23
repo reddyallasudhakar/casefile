@@ -35,20 +35,21 @@ CITIES = [
     "Jaipur", "Lucknow", "Kochi", "Indore", "Nagpur", "Coimbatore", "Vijayawada",
 ]
 
-# (diagnosis, procedure or None for medical management, stay in days, total bill range, has implant)
+# (diagnosis, procedure or None for medical management, stay in days, total bill range, has implant, min age)
 CONDITIONS = [
-    ("Acute calculous cholecystitis", "Laparoscopic cholecystectomy", (2, 5), (110_000, 200_000), False),
-    ("Senile cataract, right eye", "Phacoemulsification with IOL implantation", (0, 1), (30_000, 65_000), True),
-    ("Dengue fever with thrombocytopenia", None, (4, 7), (40_000, 110_000), False),
-    ("Acute appendicitis", "Laparoscopic appendicectomy", (2, 4), (70_000, 150_000), False),
-    ("Primary osteoarthritis, right knee", "Total knee replacement", (4, 7), (250_000, 450_000), True),
-    ("Coronary artery disease, single vessel", "PTCA with drug-eluting stent", (3, 5), (180_000, 350_000), True),
-    ("Community-acquired pneumonia", None, (4, 8), (60_000, 160_000), False),
-    ("Right inguinal hernia", "Laparoscopic hernioplasty with mesh", (2, 3), (80_000, 150_000), True),
-    ("Acute gastroenteritis with dehydration", None, (2, 4), (25_000, 60_000), False),
-    ("Left ureteric calculus", "Ureteroscopic lithotripsy with DJ stenting", (1, 3), (70_000, 140_000), False),
-    ("Enteric fever", None, (4, 7), (35_000, 90_000), False),
+    ("Acute calculous cholecystitis", "Laparoscopic cholecystectomy", (2, 5), (110_000, 200_000), False, 25),
+    ("Senile cataract, right eye", "Phacoemulsification with IOL implantation", (0, 1), (30_000, 65_000), True, 50),
+    ("Dengue fever with thrombocytopenia", None, (4, 7), (40_000, 110_000), False, 1),
+    ("Acute appendicitis", "Laparoscopic appendicectomy", (2, 4), (70_000, 150_000), False, 5),
+    ("Primary osteoarthritis, right knee", "Total knee replacement", (4, 7), (250_000, 450_000), True, 50),
+    ("Coronary artery disease, single vessel", "PTCA with drug-eluting stent", (3, 5), (180_000, 350_000), True, 35),
+    ("Community-acquired pneumonia", None, (4, 8), (60_000, 160_000), False, 1),
+    ("Right inguinal hernia", "Laparoscopic hernioplasty with mesh", (2, 3), (80_000, 150_000), True, 18),
+    ("Acute gastroenteritis with dehydration", None, (2, 4), (25_000, 60_000), False, 1),
+    ("Left ureteric calculus", "Ureteroscopic lithotripsy with DJ stenting", (1, 3), (70_000, 140_000), False, 18),
+    ("Enteric fever", None, (4, 7), (35_000, 90_000), False, 1),
 ]
+SENIOR_PRODUCT = "Senior Citizen Care"  # only for policyholders aged 60+
 
 ROOM_RATES = {  # ₹ per day
     "general_ward": (1_500, 3_000),
@@ -106,7 +107,7 @@ def sample_policy(rng, admission, total_bill, patient_age, rejection_reason):
     return {
         "insurer": rng.choice(INSURERS),
         "tpa": rng.choice(TPAS) if rng.random() < 0.7 else None,
-        "product": rng.choice(PRODUCTS),
+        "product": rng.choice([p for p in PRODUCTS if p != SENIOR_PRODUCT or patient_age >= 60]),
         "policy_number": f"{rng.randint(1000, 9999)}/{rng.randint(100000, 999999)}/{year}/{rng.randint(1, 99999):05d}",
         "inception_date": inception,
         "sum_insured": sum_insured,
@@ -117,7 +118,7 @@ def sample_policy(rng, admission, total_bill, patient_age, rejection_reason):
 
 
 def sample_bill(rng, condition, room_category, room_rate, days, total):
-    diagnosis, procedure, _, _, has_implant = condition
+    diagnosis, procedure, _, _, has_implant, _ = condition
     room_days = max(days, 1)
     items = [{"category": "room", "description": f"{room_category.replace('_', ' ').title()} room, {room_days} day(s) @ ₹{room_rate}/day", "amount": room_rate * room_days}]
 
@@ -195,8 +196,8 @@ def sample_case(seed: int) -> ClaimCase:
     fake.seed_instance(seed)
 
     patient = sample_patient(rng, fake)
-    condition = rng.choice(CONDITIONS)
-    diagnosis, procedure, stay, cost, _ = condition
+    condition = rng.choice([c for c in CONDITIONS if patient["age"] >= c[5]])
+    diagnosis, procedure, stay, cost, _, _ = condition
     days = rng.randint(*stay)
     total = round(rng.uniform(*cost), -2)
 
