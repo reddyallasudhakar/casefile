@@ -257,6 +257,31 @@ First surprise: hiding titles barely moves the keyword rules (54.8% → 52.4% cl
 OCR + masked). They key on body words, not headings. Whether the *models* were leaning on
 titles is what the next baseline round will show.
 
+## 2026-10-23: The hard test, and what model size buys
+
+Ran every baseline on all four variants (clean, masked, OCR, OCR + masked), plus Qwen at
+0.5B, 1.5B and 3B, in one VM session to avoid paying for start-up twice.
+
+| Zero-shot accuracy | Clean | OCR + masked |
+|---|---|---|
+| Qwen 0.5B | 27% | 19% |
+| Qwen 1.5B | 72% | 51% |
+| Qwen 3B | 93% | 80% |
+| Gemini 3.5 Flash / 3.1 Pro | 100% | 100% |
+
+What I take from it:
+
+- **Gemini stays at 100% even with OCR noise and no titles.** So my circularity worry was
+  only part of the story: this task really is easy for frontier models. My success bar
+  becomes "reach 100%, or be statistically indistinguishable from it".
+- **The small models were leaning on the titles.** Hiding headings costs Qwen 3B 13 points.
+  The hard variant was worth building: it shows *how* small models are cheating.
+- **Size is a big lever before any training** (27% → 72% → 93%). The interesting question for
+  fine-tuning is now: **how much of that gap does training close, at each size?** If
+  fine-tuning lifts 0.5B or 1.5B to near 100%, the smaller model wins on speed and cost.
+- **The catch-all `other` class is the hardest.** Qwen 3B never predicted it once. Worth
+  watching after fine-tuning.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first
