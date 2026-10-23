@@ -81,6 +81,11 @@ def main():
                     failed.append((seed, doc_type, missing))
             except Exception as e:  # keep going; the job is retried on the next run
                 print(f"  error: {str(e)[:160]}")
+                if "Reauthentication" in str(e):
+                    print("Google login expired: run `gcloud auth application-default login`, then re-run to resume.")
+                    for f in futures:
+                        f.cancel()
+                    break
             if i % 10 == 0 or i == len(todo):
                 print(f"  wrote {i}/{len(todo)}")
 
