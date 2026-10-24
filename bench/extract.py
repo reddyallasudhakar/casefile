@@ -298,7 +298,7 @@ def predict_gemini(page_list, model: str) -> list[str]:
         return list(pool.map(ask, page_list))
 
 
-def load_qwen(size: str, adapter: Path | None, dtype: str = "float32"):
+def load_qwen(size: str, adapter: list[Path] | Path | None, dtype: str = "float32"):
     import os
 
     import torch
@@ -312,10 +312,11 @@ def load_qwen(size: str, adapter: Path | None, dtype: str = "float32"):
     tok.padding_side = "left"
     device = "cuda" if torch.cuda.is_available() else "mps"
     model = AutoModelForCausalLM.from_pretrained(name, dtype=getattr(torch, dtype)).to(device)
-    if adapter:
+    # Adapters are merged in order, e.g. [SFT, GRPO]: GRPO's LoRA was trained on the merged SFT model.
+    for path in [adapter] if isinstance(adapter, Path) else adapter or []:
         from peft import PeftModel
 
-        model = PeftModel.from_pretrained(model, adapter).merge_and_unload()
+        model = PeftModel.from_pretrained(model, path).merge_and_unload()
     return tok, model.eval()
 
 
@@ -333,7 +334,7 @@ def generate_batch(tok, model, prompts: list[str], max_new_tokens: int = 220, sa
     return tok.batch_decode(out[:, enc["input_ids"].shape[1]:], skip_special_tokens=True)
 
 
-def predict_qwen(page_list, size: str, adapter: Path | None, batch: int = 8) -> list[str]:
+def predict_qwen(page_list, size: str, adapter: list[Path] | None, batch: int = 8) -> list[str]:
     tok, model = load_qwen(size, adapter)
     replies, start = [], time.time()
     for i in range(0, len(page_list), batch):
@@ -357,7 +358,7 @@ def main():
     pr = sub.add_parser("predict")
     pr.add_argument("model", choices=["gemini", "gemini-pro", "qwen"])
     pr.add_argument("--size", default="0.5B")
-    pr.add_argument("--adapter", type=Path)
+    pr.add_argument("--adapter", type=Path, nargs="+", help="one or more adapters, merged in order")
     pr.add_argument("--variant", default="clean", choices=["clean", "ocr"])
     pr.add_argument("--split", default="test")
     pr.add_argument("--name", help="output name (default derived from the options)")
@@ -378,7 +379,7 @@ def main():
         page_list = pages(args.split, args.variant)
         if args.model == "qwen":
             replies = predict_qwen(page_list, args.size, args.adapter)
-            default = f"qwen-{args.size}" + ("-sft" if args.adapter else "")
+            default = f"qwen-{args.size}" + {0: "", 1: "-sft", 2: "-grpo"}[len(args.adapter or [])]
         else:
             replies = predict_gemini(page_list, "gemini-3.5-flash" if args.model == "gemini" else "gemini-3.1-pro-preview")
             default = args.model

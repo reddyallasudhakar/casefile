@@ -6,14 +6,14 @@ full plan in `llm-training-lab/PROJECT_PLAN.md`.
 
 Legend: `[x]` done · `[~]` in progress / partly done · `[ ]` to do
 
-_Last updated: 2026-10-24_
+_Last updated: 2026-10-24 (after F5)_
 
 ---
 
 ## ▶ Now / next
 
-- [ ] **F5: extract claim facts** (settlement letter, bill, policy schedule, discharge summary → JSON). See *F5* below
-- [ ] Set the F5 success bar **before** any results
+- [x] **F5: extract claim facts**: done and published ([results/f5.md](../results/f5.md))
+- [ ] Decide what's next: an F5 follow-up (more RL pages / SFT on more OCR data), F3/F4 sprints, or the rules engine
 - [x] Commit `docs/RULES_ENGINE.md` + this file (`8c65581`)
 
 ---
@@ -63,20 +63,24 @@ _Last updated: 2026-10-24_
 - [ ] Test on real pages (private, de-identified; consent permitting)
 - [ ] Test on pages from a different writer model
 
-## F5: extracting claim facts (next)
+## F5: extracting claim facts ✅
 
 Question: F2 showed a small model can *recognise* a document. Can it *read it precisely*, i.e.
 copy every amount, date and ID exactly, as well as Gemini? And does GRPO improve on SFT?
 
-- [ ] Schemas for 4 types (settlement letter, hospital bill, policy schedule, discharge summary)
-- [ ] Success bar, set before results
-- [ ] Gold JSON per page from the cases, filtered to facts actually on the page
-- [ ] Scoring: per-field, whole-document, valid-JSON rate, deduction-list precision/recall
-- [ ] Baselines: Qwen 0.5B/1.5B/3B prompted, Gemini Flash + Pro (clean and OCR)
-- [ ] SFT with LoRA (JSON output)
-- [ ] RL lesson: policy gradients → PPO → GRPO
-- [ ] GRPO on top of SFT, reward = fields correct + valid JSON; reward-hacking check
-- [ ] Results page + log
+- [x] Schemas for 4 types (settlement letter, hospital bill, policy schedule, discharge summary)
+- [x] Success bar, set before results
+- [x] Gold JSON per page from the cases, filtered to facts actually on the page
+- [x] Scoring: per-field, whole-document, valid-JSON rate, deduction-list precision/recall
+- [x] Baselines: Qwen 0.5B/1.5B/3B prompted, Gemini Flash + Pro (clean and OCR)
+- [x] SFT with LoRA (JSON output)
+- [x] RL lesson: policy gradients → PPO → GRPO
+- [x] GRPO on top of SFT, reward = fields correct + valid JSON; reward-hacking check
+- [x] Results page + log
+- [x] **Result: clean text, SFT 1.5B/3B = 98% pages fully right (Gemini 99%); OCR, 86–88% vs Gemini 97% (gap real, bar 1 not met); GRPO +1 page, not significant (bar 2 not met); no reward hacking**
+- [x] +400 extraction pages (seeds 10,000+) and 200 RL-only pages (seeds 20,000+)
+- [ ] Follow-up: more RL pages, harder-page selection, best-checkpoint selection; compare with SFT on more OCR data
+- [ ] Publish the best extraction adapter on Hugging Face
 
 ## Rules engine (deferred; designed)
 
@@ -109,17 +113,19 @@ copy every amount, date and ID exactly, as well as Gemini? And does GRPO improve
 - [x] M9 SFT data (via F2) · [x] M10 LoRA (via F2)
 - [ ] M11 QLoRA · M12 distillation · M13 shipping a model
 - [ ] M14–M15 reward models, DPO
-- [ ] M16–M20 RL foundations (bandits → PPO)
-- [ ] M21–M24 RLHF, GRPO, reward design, RL for agents
+- [~] M16–M20 RL foundations: policy gradients → GRPO covered in docs/RL_PRIMER.md; bandits/Q-learning/PPO exercises not done
+- [~] M21–M24: GRPO run + reward-hacking check done in F5; RLHF, RL for agents not done
 - [ ] M25 search and prompt optimisation
 
 ## Open decisions
 
-- [ ] F5 success bar
+- [x] F5 success bar (set in auto mode, committed `330706b` before results)
 - [ ] Rules-engine defaults (continuous inception, deduction order)
 - [ ] Whether registration consent covers a private real-page test set
 
 ## Known issues and risks
+
+- [x] F2 results commit hadn't reached GitHub; fixed in `74b7d2f`. Always verify the remote after pushing
 
 - [ ] **Private backend repo has what looks like real customer data in git history** (`src/tests/e2e/cases/`, some test fixtures). Review under DPDP, separately from Casefile
 - [ ] Google Workspace logins expire mid-session (`gcloud auth login`, `application-default login`); long jobs should run on the VM with its service account

@@ -434,6 +434,40 @@ remaining misses are real reading errors (a date off by one day, amounts on nois
 Lesson: **an eval's first job is to be checked against a strong model.** If the strongest
 model "fails", read the failures before believing them; several were my bugs.
 
+## 2026-10-24: F5 results: reading precisely, and my first RL run
+
+**The headline is mixed, and that's the honest result.**
+
+- **Clean text: small models read as precisely as Gemini.** Fine-tuned Qwen 1.5B and 3B get
+  98% of pages fully right against Gemini 3.1 Pro's 99%.
+- **OCR text: they don't.** Best fine-tuned model 87.8% against Gemini's 96.9%, a real gap
+  (p = 0.004). Success bar 1 not met. F2 (recognising a document) came easily; reading exact
+  numbers through OCR noise is where a small model still pays for its size.
+- **GRPO didn't help** (86.7% vs 85.7% on OCR, not significant). Success bar 2 not met.
+
+What I learned from the RL run, which I think matters more than the number:
+
+1. **GRPO needs disagreement to learn.** It compares a model's own answers to each other, so on
+   pages where all 8 attempts agree, there's nothing to learn. My SFT model was already
+   consistent; only ~2 of 8 pages per step carried signal. In the smoke test, on SFT's own
+   training pages, it was 0 of 2, which is why I generated 200 RL-only pages.
+2. **Reward up, validation down** is the signature of learning the training pages rather than
+   the skill. With 200 pages seen ~3 times each, the model memorised.
+3. **Some errors can't be learned:** when OCR has destroyed the digit, no policy recovers it.
+4. **No reward hacking**, which I checked for explicitly: no invented room-rent limits, no
+   length drift.
+
+Engineering notes: the first GRPO attempt ran out of GPU memory computing vocabulary scores
+for every position of long pages; scoring only the answer positions fixed it. The VM's 4-hour
+auto-stop would have cut the run short, so I restarted it to reset the clock first.
+
+**And an important process catch:** the F2 results commit had never actually reached GitHub.
+The public repo was still showing pre-fine-tuning numbers. Fixed (`74b7d2f`); I now check the
+remote after pushing instead of assuming.
+
+Next for this line of work: more RL pages and harder-page selection, and the simpler baseline
+of SFT on more OCR examples, before concluding anything about RL in general.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first

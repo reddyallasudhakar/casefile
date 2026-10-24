@@ -15,9 +15,14 @@ Casefile answers it one task at a time, each with a frozen test set, a ladder of
 and a success bar written down before any results. The reasoning behind every decision is
 in the **[research log](docs/LOG.md)**.
 
-## Latest result
+## Results so far
 
-**A fine-tuned 0.5B model matches Gemini at sorting claim documents:** 100% on clean text and
+**F5: reading claim documents precisely (latest).** Fine-tuned Qwen 1.5B/3B extract every field
+right on 98% of clean pages, matching Gemini (99%), but only 86–88% on OCR'd pages against
+Gemini's 97%, a real gap. A first GRPO run on top didn't close it, and the write-up explains
+why. **[Full results →](results/f5.md)**
+
+**F2: sorting claim documents.** A fine-tuned 0.5B model matches Gemini: 100% on clean text and
 98.4% on OCR'd pages with headings hidden, against 79.8% for the best *prompted* 3B model.
 8 minutes of training on one GPU. **[Full results →](results/f2.md)**
 
@@ -32,8 +37,10 @@ in the **[research log](docs/LOG.md)**.
 |---|---|---|
 | Synthetic data | 800 claim pages (10 document types × 80) generated from 314 sampled claim cases, each with a clean render and a phone-photo or scanner copy | ✅ done |
 | F2: document type | Classify a page into 10 types; baselines → LoRA fine-tune → compare with Gemini | ✅ **Fine-tuned Qwen 0.5B matches Gemini: 100% on clean text, 98.4% on OCR + hidden titles (from 18.5% zero-shot), statistically indistinguishable.** 8 min to train on one GPU, 34 MB adapter ([results/f2.md](results/f2.md)) |
-| F0: reading | Which OCR reads amounts, dates and policy numbers correctly | ⏳ next |
-| Later | Field extraction, deduction checks with a rules engine, RL with verifiable rewards | planned |
+| F5: extraction | Page → JSON (amounts, dates, IDs); baselines → SFT at 3 sizes → GRPO | ✅ **Clean text: fine-tuned 1.5B/3B = 98% of pages fully right, matching Gemini. OCR text: 86–88% vs Gemini 97% (gap is real). GRPO: no significant gain** ([results/f5.md](results/f5.md)) |
+| F0: reading | Which OCR reads amounts, dates and policy numbers correctly | 🟡 Cloud Vision checked; engine comparison to do |
+| Rules engine | What the insurer should have paid; audits each deduction | 📝 designed ([docs/RULES_ENGINE.md](docs/RULES_ENGINE.md)) |
+| Later | Adjudication with RL on the engine's verdicts, distillation, demo | planned |
 
 ## How the data is made
 
@@ -49,9 +56,9 @@ insurers and hospitals are fictional. No real customer data is used anywhere in 
 
 ```
 synth/     case schema, case sampler, document writer, renderer, degrader, generate.py
-bench/     split (splits.json is frozen), OCR and title masking, baselines, finetune.py, score.py, report.py
+bench/     split (frozen), OCR, title masking, baselines, finetune.py, extract.py (F5), grpo.py, score.py, reports
 results/   one file per task: success bar, baselines, results
-docs/      research log
+docs/      research log, progress tracker, RL primer, rules-engine plan, costs
 ```
 
 ## Reproduce

@@ -1,0 +1,98 @@
+{"seed": 4, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Nidra Chauhan\", \"admission_date\": \"2023-05-01\", \"discharge_date\": \"2023-05-03\"}"}
+{"seed": 4, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Nidra Chauhan\", \"admission_date\": \"2023-05-01\", \"discharge_date\": \"2023-05-03\", \"total_amount\": 86300}"}
+{"seed": 4, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"4512/126885/2016/83977\", \"patient_name\": \"Nidra Chauhan\", \"sum_insured\": 700000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 4, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Nidra Chauhan\", \"policy_number\": \"4512/126885/2016/83977\", \"claimed_amount\": 86300, \"approved_amount\": 81238, \"deduction_amounts\": [5062]}"}
+{"seed": 17, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Max Pau\", \"admission_date\": \"2023-02-25\", \"discharge_date\": \"2023-03-02\"}"}
+{"seed": 17, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Max Pau\", \"admission_date\": \"2023-02-25\", \"discharge_date\": \"2023-03-02\", \"total_amount\": 186200}"}
+{"seed": 17, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"3253/677958/2017/08152\", \"patient_name\": \"Max Pau\", \"sum_insured\": 700000, \"copay_percent\": 0, \"room_rent_limit\": 4000}"}
+{"seed": 17, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Max Pau\", \"policy_number\": \"3253/677958/2017/08152\", \"claimed_amount\": 186200, \"approved_amount\": 142139, \"deduction_amounts\": [32176, 11885]}"}
+{"seed": 20, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Leena Chaudhuri\", \"admission_date\": \"2025-04-13\", \"discharge_date\": \"2025-04-17\"}"}
+{"seed": 20, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Leena Chaudhuri\", \"admission_date\": \"2025-04-13\", \"discharge_date\": \"2025-04-17\", \"total_amount\": 137600}"}
+{"seed": 20, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"20-Aug-2023\", \"patient_name\": \"Leena Chaudhuri\", \"sum_insured\": 500000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 35, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Ekaja Oak\", \"admission_date\": \"2024-07-15\", \"discharge_date\": \"2024-07-18\"}"}
+{"seed": 35, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Ekaja Oak\", \"admission_date\": \"2024-07-15\", \"discharge_date\": \"2024-07-18\", \"total_amount\": 104500}"}
+{"seed": 35, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"2583/856738/2017/64917\", \"patient_name\": \"Ekaja Oak\", \"sum_insured\": 5000000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 35, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Ekaja Oak\", \"policy_number\": \"2583/856738/2017/64917\", \"claimed_amount\": 104500, \"approved_amount\": 104500, \"deduction_amounts\": []}"}
+{"seed": 44, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Yoshita Dada\", \"admission_date\": \"2023-11-17\", \"discharge_date\": \"2023-11-19\"}"}
+{"seed": 44, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Yoshita Dada\", \"admission_date\": \"2023-11-17\", \"discharge_date\": \"2023-11-19\", \"total_amount\": 47600}"}
+{"seed": 44, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"2205/455279/2018/31204\", \"patient_name\": \"Yoshita Dada\", \"sum_insured\": 2000000, \"copay_percent\": 0, \"room_rent_limit\": 20000}"}
+{"seed": 51, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Yashasvi Edwin\", \"admission_date\": \"2026-01-27\", \"discharge_date\": \"2026-02-01\"}"}
+{"seed": 51, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Yashasvi Edwin\", \"admission_date\": \"2026-01-27\", \"discharge_date\": \"2026-02-01\", \"total_amount\": 223500}"}
+{"seed": 51, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"1124/993987/2021/14929\", \"patient_name\": \"Yashasvi Edwin\", \"sum_insured\": 1500000, \"copay_percent\": 0, \"room_rent_limit\": 15000}"}
+{"seed": 51, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Yashasvi Edwin\", \"policy_number\": \"1124/993987/2021/14929\", \"claimed_amount\": 223500, \"approved_amount\": 223500, \"deduction_amounts\": []}"}
+{"seed": 55, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Indira Doctor\", \"admission_date\": \"2026-09-19\", \"discharge_date\": \"2026-09-21\"}"}
+{"seed": 55, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Indira Doctor\", \"admission_date\": \"2026-09-19\", \"discharge_date\": \"2026-09-21\", \"total_amount\": 132300}"}
+{"seed": 55, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"9752/910514/2021/82700\", \"patient_name\": \"Indira Doctor\", \"sum_insured\": 1000000, \"copay_percent\": 0, \"room_rent_limit\": 10000}"}
+{"seed": 55, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Indira Doctor\", \"policy_number\": \"9752/910514/2021/82700\", \"claimed_amount\": 132300, \"approved_amount\": 127690, \"deduction_amounts\": [4610]}"}
+{"seed": 59, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Brijesh Sharaf\", \"admission_date\": \"2025-09-20\", \"discharge_date\": \"2025-09-23\"}"}
+{"seed": 59, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Brijesh Sharaf\", \"admission_date\": \"2025-09-20\", \"discharge_date\": \"2025-09-23\", \"total_amount\": 127099}"}
+{"seed": 59, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"2866/206057/2019/48880\", \"patient_name\": \"Brijesh Sharaf\", \"sum_insured\": 700000, \"copay_percent\": 0, \"room_rent_limit\": 2700000}"}
+{"seed": 59, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Brijesh Sharaf\", \"policy_number\": \"2866/206057/2019/48880\", \"claimed_amount\": 127099, \"approved_amount\": 118943, \"deduction_amounts\": [8156]}"}
+{"seed": 61, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Hemani Kalita\", \"admission_date\": \"2025-04-10\", \"discharge_date\": \"2025-04-16\"}"}
+{"seed": 61, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Hemani Kalita\", \"admission_date\": \"2025-04-10\", \"discharge_date\": \"2025-04-16\", \"total_amount\": 140400}"}
+{"seed": 61, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"1432/554577/2022/18897\", \"patient_name\": \"Hemani Kalita\", \"sum_insured\": 700000, \"copay_percent\": 0, \"room_rent_limit\": 7000}"}
+{"seed": 61, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Hemani Kalita\", \"policy_number\": \"1432/554577/2022/18897\", \"claimed_amount\": 140400, \"approved_amount\": 131182, \"deduction_amounts\": [9218, 7929]}"}
+{"seed": 72, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Idika Padmanabhan\", \"admission_date\": \"2024-12-03\", \"discharge_date\": \"2024-12-09\"}"}
+{"seed": 72, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Idika Padmanabhan\", \"admission_date\": \"2024-12-03\", \"discharge_date\": \"2024-12-09\", \"total_amount\": 315301}"}
+{"seed": 72, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"2130/909921/2022/38716\", \"patient_name\": \"Idika Padmanabhan\", \"sum_insured\": 5000000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 72, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Idika Padmanabhan\", \"policy_number\": \"2130/909921/2022/38716\", \"claimed_amount\": 315301, \"approved_amount\": 304319, \"deduction_amounts\": [10982]}"}
+{"seed": 73, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Darsh Thakkar\", \"admission_date\": \"2024-02-19\", \"discharge_date\": \"2024-02-26\"}"}
+{"seed": 73, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Darsh Thakkar\", \"admission_date\": \"2024-02-19\", \"discharge_date\": \"2024-02-26\", \"total_amount\": 70701}"}
+{"seed": 73, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"8102/289098/2023/07338\", \"patient_name\": \"Darsh Thakkar\", \"sum_insured\": 700000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 73, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Darsh Thakkar\", \"policy_number\": \"8102/289098/2023/07338\", \"claimed_amount\": 70701, \"approved_amount\": 66540, \"deduction_amounts\": [4161]}"}
+{"seed": 75, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Tejas Sha\", \"admission_date\": \"2024-10-10\", \"discharge_date\": \"2024-10-16\"}"}
+{"seed": 75, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Tejas Sha\", \"admission_date\": \"2024-10-11\", \"discharge_date\": \"2024-10-16\", \"total_amount\": 206101}"}
+{"seed": 75, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"7696/128827/2021/49573\", \"patient_name\": \"Tejas Sha\", \"sum_insured\": 700000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 76, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Vincent Ramachandran\", \"admission_date\": \"2025-06-16\", \"discharge_date\": \"2025-06-20\"}"}
+{"seed": 76, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Vincent Ramachandran\", \"admission_date\": \"2025-06-16\", \"discharge_date\": \"2025-06-20\", \"total_amount\": 101800}"}
+{"seed": 76, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"1124/791111/2024/54129\", \"patient_name\": \"Vincent Ramachandran\", \"sum_insured\": 700000, \"copay_percent\": 0, \"room_rent_limit\": 3000}"}
+{"seed": 76, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Vincent Ramachandran\", \"policy_number\": \"1124/791111/2024/54129\", \"claimed_amount\": 101800, \"approved_amount\": 92471, \"deduction_amounts\": [1853, 4145]}"}
+{"seed": 86, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Nitara Arora\", \"policy_number\": \"8543/100328/2021/76138\", \"claimed_amount\": 364801, \"approved_amount\": 221167, \"deduction_amounts\": [143634]}"}
+{"seed": 10001, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Bhavika Dar\", \"admission_date\": \"2024-07-26\", \"discharge_date\": \"2024-07-28\"}"}
+{"seed": 10001, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Bhavika Dar\", \"admission_date\": \"2024-07-26\", \"discharge_date\": \"2024-07-28\", \"total_amount\": 115100}"}
+{"seed": 10001, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"7165/562508/2020/82268\", \"patient_name\": \"Bhavika Dar\", \"sum_insured\": 2500000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 10001, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Bhaviya Dar\", \"policy_number\": \"7165/562508/2020/82268\", \"claimed_amount\": 115100, \"approved_amount\": 105237, \"deduction_amounts\": [9863]}"}
+{"seed": 10003, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Aahana Sama\", \"admission_date\": \"2025-04-02\", \"discharge_date\": \"2025-04-09\"}"}
+{"seed": 10003, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Aahana Sama\", \"admission_date\": \"2025-04-02\", \"discharge_date\": \"2025-04-09\", \"total_amount\": 192500}"}
+{"seed": 10003, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"9515/437792/2024/11599\", \"patient_name\": \"Aahana Sama\", \"sum_insured\": 5000000, \"copay_percent\": 0, \"room_rent_limit\": 3000}"}
+{"seed": 10003, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Aahana Sama\", \"policy_number\": \"9515/437792/2024/11599\", \"claimed_amount\": 192500, \"approved_amount\": 192500, \"deduction_amounts\": []}"}
+{"seed": 10011, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Zehaan Menon\", \"admission_date\": \"2025-07-15\", \"discharge_date\": \"2025-07-17\"}"}
+{"seed": 10011, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Zehaan Menon\", \"admission_date\": \"2025-07-15\", \"discharge_date\": \"2025-07-17\", \"total_amount\": 134600}"}
+{"seed": 10011, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"3578/207865/2019/81149\", \"patient_name\": \"Zehaan Menon\", \"sum_insured\": 1000000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 10011, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Zehaan Menon\", \"policy_number\": \"3578/207865/2019/81149\", \"claimed_amount\": 134600, \"approved_amount\": 128477, \"deduction_amounts\": [3688, 2435]}"}
+{"seed": 10014, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Hredhaan Laila\", \"admission_date\": \"2023-09-21\", \"discharge_date\": \"2023-09-25\"}"}
+{"seed": 10014, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Hredhaan Lalla\", \"admission_date\": \"2023-09-21\", \"discharge_date\": \"2023-09-25\", \"total_amount\": 125000}"}
+{"seed": 10014, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"5895/528136/2021/97932\", \"patient_name\": \"Hredhaan Lalla\", \"sum_insured\": 700000, \"copay_percent\": 0, \"room_rent_limit\": 3000}"}
+{"seed": 10031, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Chameli Thakkar\", \"admission_date\": \"2023-11-13\", \"discharge_date\": \"2023-11-18\"}"}
+{"seed": 10031, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Chamele Thakkar\", \"admission_date\": \"2023-11-13\", \"discharge_date\": \"2023-11-18\", \"total_amount\": 304200}"}
+{"seed": 10031, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"7737/955018/2016/84863\", \"patient_name\": \"Chameli Thakkar\", \"sum_insured\": 5000000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 10031, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Chameli Thakkar\", \"policy_number\": \"7737/955018/2016/84863\", \"claimed_amount\": 304200, \"approved_amount\": 297221, \"deduction_amounts\": [6979]}"}
+{"seed": 10037, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Dev Sabharwal\", \"admission_date\": \"2026-02-19\", \"discharge_date\": \"2026-02-23\"}"}
+{"seed": 10037, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Dev Sabharwal\", \"admission_date\": \"2026-02-19\", \"discharge_date\": \"2026-02-23\", \"total_amount\": 159000}"}
+{"seed": 10037, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"5636/431251/2020/11886\", \"patient_name\": \"Dev Sabharwal\", \"sum_insured\": 300000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 10037, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Dev Sabharwal\", \"policy_number\": \"5636/431251/2020/11886\", \"claimed_amount\": 159000, \"approved_amount\": 154702, \"deduction_amounts\": [4298]}"}
+{"seed": 10038, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Logan Nath\", \"admission_date\": \"2025-09-12\", \"discharge_date\": \"2025-09-17\"}"}
+{"seed": 10038, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Logan Nath\", \"admission_date\": \"2025-09-12\", \"discharge_date\": \"2025-09-17\", \"total_amount\": 234100}"}
+{"seed": 10038, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"6568/842545/2023/69704\", \"patient_name\": \"Logan Nath\", \"sum_insured\": 700000, \"copay_percent\": 0, \"room_rent_limit\": 7000}"}
+{"seed": 10038, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Logan Nath\", \"policy_number\": \"6568/842545/2023/69704\", \"claimed_amount\": 234100, \"approved_amount\": 229390, \"deduction_amounts\": [4710]}"}
+{"seed": 10058, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Manan Pant\", \"admission_date\": \"2024-02-12\", \"discharge_date\": \"2024-02-15\"}"}
+{"seed": 10058, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Manan Pant\", \"admission_date\": \"2024-02-12\", \"discharge_date\": \"2024-02-15\", \"total_amount\": 75400}"}
+{"seed": 10058, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"3672/735354/2016/66915\", \"patient_name\": \"Manan Pant\", \"sum_insured\": 5000000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 10062, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Jai Rana\", \"admission_date\": \"2024-04-29\", \"discharge_date\": \"2024-05-01\"}"}
+{"seed": 10062, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Jai Rana\", \"admission_date\": \"2024-04-29\", \"discharge_date\": \"2024-05-01\", \"total_amount\": 162899}"}
+{"seed": 10062, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"6492/744415/2016/70497\", \"patient_name\": \"Jai Rana\", \"sum_insured\": 5000000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 10062, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Jai Rana\", \"policy_number\": \"6492/744415/2016/70497\", \"claimed_amount\": 162899, \"approved_amount\": 151710, \"deduction_amounts\": [11189]}"}
+{"seed": 10065, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Adweta Edwin\", \"admission_date\": \"2026-08-15\", \"discharge_date\": \"2026-08-19\"}"}
+{"seed": 10065, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Adweta Edwin\", \"admission_date\": \"2026-08-15\", \"discharge_date\": \"2026-08-19\", \"total_amount\": 40900}"}
+{"seed": 10065, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"4873/682869/2026/51717\", \"patient_name\": \"Adweta Edwin\", \"sum_insured\": 5000000, \"copay_percent\": 0, \"room_rent_limit\": 50000}"}
+{"seed": 10065, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Adweta Edwin\", \"policy_number\": \"4873/682869/2026/51717\", \"claimed_amount\": 40900, \"approved_amount\": 38395, \"deduction_amounts\": [2505]}"}
+{"seed": 10094, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Krish Karan\", \"admission_date\": \"2026-05-05\", \"discharge_date\": \"2026-05-10\"}"}
+{"seed": 10094, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Krish Karan\", \"admission_date\": \"2026-05-05\", \"discharge_date\": \"2026-05-10\", \"total_amount\": 225400}"}
+{"seed": 10094, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"9917/538067/201965568\", \"patient_name\": \"Krish Karan\", \"sum_insured\": 1700000, \"copay_percent\": 0, \"room_rent_limit\": null}"}
+{"seed": 10094, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Krish Karan\", \"policy_number\": \"9917/538067/2019/65568\", \"claimed_amount\": 225400, \"approved_amount\": 175207, \"deduction_amounts\": [51766, 25550]}"}
+{"seed": 10099, "doc_type": "discharge_summary", "raw": "{\"patient_name\": \"Daniel Rau\", \"admission_date\": \"2026-05-04\", \"discharge_date\": \"2026-05-07\"}"}
+{"seed": 10099, "doc_type": "hospital_bill", "raw": "{\"patient_name\": \"Daniel Rau\", \"admission_date\": \"2026-05-04\", \"discharge_date\": \"2026-05-07\", \"total_amount\": 249900}"}
+{"seed": 10099, "doc_type": "policy_schedule", "raw": "{\"policy_number\": \"7032/700036/2024/80684\", \"patient_name\": \"K. Venkatraman\", \"sum_insured\": 1500000, \"copay_percent\": 0, \"room_rent_limit\": 15000}"}
+{"seed": 10099, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Daniel Rau\", \"policy_number\": \"7032/700036/2024/80684\", \"claimed_amount\": 249900, \"approved_amount\": 245602, \"deduction_amounts\": [4298]}"}
+{"seed": 10109, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Wriddhish Gokhale\", \"policy_number\": \"5896/145974/2022/84241\", \"claimed_amount\": 230799, \"approved_amount\": 213211, \"deduction_amounts\": [17588]}"}
+{"seed": 10119, "doc_type": "settlement_letter", "raw": "{\"patient_name\": \"Siddharth Radhakrishnan\", \"policy_number\": \"78300.00\", \"claimed_amount\": 320299, \"approved_amount\": 320299, \"deduction_amounts\": []}"}
