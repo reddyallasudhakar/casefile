@@ -305,6 +305,112 @@ What I take from it:
 
 Same recipe for 0.5B, 1.5B and 3B, so the only thing that changes is model size.
 
+## 2026-10-24: Fine-tuning results: the smallest model is enough
+
+| OCR + titles hidden (the hardest variant) | Zero-shot | Fine-tuned |
+|---|---|---|
+| Qwen 0.5B | 18.5% | **98.4%** |
+| Qwen 1.5B | 50.8% | 99.2% |
+| Qwen 3B | 79.8% | 99.2% |
+| Gemini 3.1 Pro | 100% | — |
+
+On clean text, all three fine-tuned sizes score **124/124, matching Gemini exactly: my success
+bar is met, by the 0.5B.** On the noisy variants, every size is within 0–2 pages of Gemini, and
+McNemar says none of the gaps is real (all p ≥ 0.5).
+
+What I take from it:
+
+- **Fine-tuning closed the gap that size couldn't.** Zero-shot, going from 0.5B to 3B was
+  worth +60 points. After fine-tuning, size is worth nothing measurable. So for a narrow task
+  the question isn't "how big a model?" but "have I trained it?".
+- **The sweet spot is 0.5B:** 8 minutes to train, 0.2 s per page on one GPU, a 34 MB adapter,
+  and small enough to run on a laptop or in a client's own cloud. That's the DPDP story in numbers.
+- **Training on all four variants worked.** Zero-shot, the small models leaned on titles;
+  fine-tuned, they score the same with titles hidden.
+- **The remaining errors are exactly the near-neighbour pairs** from my label guide: medical
+  report vs discharge summary for 0.5B, and **rejection letter vs pre-auth denial** for the
+  bigger models. That second one matters most for FairClaims, because a cashless denial isn't
+  a claim rejection and needs a different next step.
+- **The loss went almost to zero** (≈0.0005), and validation stayed at 98–99%, so the task is
+  very learnable from this data. Next, the honest test: real pages, which weren't written by
+  the same model as the training data.
+
+**Cost:** about $1 of GPU for all three fine-tunes plus evaluations.
+
+**Operational lessons:** Google reclaimed the Spot VM partway through the 1.5B run
+(preemption), and the first restart hit a "stockout" (no L4s free in the zone); a retry
+worked. I switched to on-demand for that session (~$0.70/h) and back to Spot afterwards. Long
+jobs now run detached on the VM (`nohup`), so a dropped SSH connection doesn't kill them.
+
+## 2026-10-24: Was fine-tuning actually necessary? Reading the lift
+
+My question after the results: if 3B already got 92.7% zero-shot on clean text, couldn't I
+have skipped fine-tuning and just used a bigger model? The lift table answers it:
+
+| Hardest variant (OCR + titles hidden) | Zero-shot | Fine-tuned | Lift |
+|---|---|---|---|
+| 0.5B | 18.5% | 98.4% | +79.8 |
+| 1.5B | 50.8% | 99.2% | +48.4 |
+| 3B | 79.8% | 99.2% | +19.4 |
+
+My reasoning:
+
+1. **Clean-text accuracy flatters untrained models.** 3B's 92.7% becomes 79.8% on realistic
+   input, one page in five wrong. A misrouted page in FairClaims (a rejection treated as a
+   cashless denial) sends the user down the wrong path, so that's not shippable.
+2. **Fine-tuning beats size.** A fine-tuned 0.5B beats an untrained 3B by ~19 points on
+   realistic input, at a sixth of the size. Given the choice between "bigger model" and
+   "trained model", train.
+3. **The lift is biggest where the input is hardest**, for every size. Fine-tuning mostly
+   bought robustness (reading content without the heading, through OCR noise), which is
+   exactly what real uploads need.
+4. **The lift shrinks with size** (+80 → +48 → +19), because bigger models start further
+   ahead, but all three end in the same place (98–99%). Starting point differs; finish doesn't.
+5. **What I haven't ruled out:** prompting a bigger model *with examples* (few-shot) might
+   close part of the gap without training. Few-shot didn't help 0.5B, but larger models use
+   examples better. The rigorous version of "did I need fine-tuning?" compares fine-tuned 0.5B
+   with the *best-prompted* 3B, not just zero-shot.
+
+## 2026-10-24: Closing the question: could prompting have replaced fine-tuning?
+
+I ran few-shot (one example per type in the prompt) for all three sizes on all four variants,
+so the "before" numbers are the *best* prompting, not just zero-shot.
+
+| OCR + titles hidden | Zero-shot | Few-shot | Fine-tuned |
+|---|---|---|---|
+| Qwen 0.5B | 18.5% | 18.5% | 98.4% |
+| Qwen 1.5B | 50.8% | 57.3% | 99.2% |
+| Qwen 3B | 79.8% | 79.8% | 99.2% |
+
+**Answer: no.** Examples in the prompt add at most ~7 points (1.5B) and nothing for 3B on the
+realistic variant. The best-prompted 3B is still at 79.8%, one page in five wrong. Fine-tuning
+was necessary, and it made the *smallest* model the best choice.
+
+Published the full grid, a chart and the method as a results page:
+[results/f2.md](../results/f2.md).
+
+## 2026-10-24: Planning the rules engine, and what my own backend actually computes
+
+I planned to port the claim logic from my TypeScript backend. A read-only review changed the
+plan: **most of the money rules aren't code at all.** Room-rent proportionate deduction, ICU
+limits, deductibles, sub-limits and non-payable items exist only as instructions in LLM
+prompts. A model decides what's fair; code just does the final arithmetic (co-pay, sum-insured
+cap). The deterministic parts are the waiting-period and moratorium date maths, and the
+settlement arithmetic.
+
+So the engine is **new work, with the backend as a reference**: its conventions, its synthetic
+test cases, and a list of inconsistencies not to copy (three different "continuous cover start"
+rules, the 30-day wait measured from the renewal date, moratorium months computed two ways,
+substring matching on "ped" that also matches "orthopedic").
+
+It's also a product insight: today, FairClaims' most consequential numbers come from model
+judgement. A tested, deterministic engine underneath would make them auditable, which
+matters when you're telling someone their insurer owes them ₹67,500.
+
+Plan: [RULES_ENGINE.md](RULES_ENGINE.md). Eligibility → payable (six fixed steps, every rupee
+traceable to a rule) → auditing each insurer deduction as valid / excessive / invalid /
+needs info. Golden cases in JSON so a TypeScript version can be checked against the same cases.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first
