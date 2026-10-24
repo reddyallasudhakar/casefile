@@ -15,12 +15,23 @@ Casefile answers it one task at a time, each with a frozen test set, a ladder of
 and a success bar written down before any results. The reasoning behind every decision is
 in the **[research log](docs/LOG.md)**.
 
+## Latest result
+
+**A fine-tuned 0.5B model matches Gemini at sorting claim documents:** 100% on clean text and
+98.4% on OCR'd pages with headings hidden, against 79.8% for the best *prompted* 3B model.
+8 minutes of training on one GPU. **[Full results →](results/f2.md)**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="results/f2_chart_dark.png">
+  <img alt="Zero-shot, few-shot and fine-tuned accuracy for Qwen 0.5B, 1.5B and 3B: fine-tuned models reach 98–100%, prompted models 19–93%, Gemini 3.1 Pro 100%." src="results/f2_chart_light.png">
+</picture>
+
 ## Status
 
 | Stage | What | State |
 |---|---|---|
 | Synthetic data | 800 claim pages (10 document types × 80) generated from 314 sampled claim cases, each with a clean render and a phone-photo or scanner copy | ✅ done |
-| F2: document type | Classify a page into 10 types; baselines → LoRA fine-tune → compare with Gemini | 🔄 baselines done on clean, OCR and title-masked text: Qwen 0.5B/1.5B/3B zero-shot 27%/72%/93% clean, 19%/51%/80% on OCR + masked; Gemini 100% everywhere ([results/f2.md](results/f2.md)). Fine-tuning next |
+| F2: document type | Classify a page into 10 types; baselines → LoRA fine-tune → compare with Gemini | ✅ **Fine-tuned Qwen 0.5B matches Gemini: 100% on clean text, 98.4% on OCR + hidden titles (from 18.5% zero-shot), statistically indistinguishable.** 8 min to train on one GPU, 34 MB adapter ([results/f2.md](results/f2.md)) |
 | F0: reading | Which OCR reads amounts, dates and policy numbers correctly | ⏳ next |
 | Later | Field extraction, deduction checks with a rules engine, RL with verifiable rewards | planned |
 
@@ -38,7 +49,7 @@ insurers and hospitals are fictional. No real customer data is used anywhere in 
 
 ```
 synth/     case schema, case sampler, document writer, renderer, degrader, generate.py
-bench/     train/val/test split (splits.json is the frozen split), score.py (the one judge for every model)
+bench/     split (splits.json is frozen), OCR and title masking, baselines, finetune.py, score.py, report.py
 results/   one file per task: success bar, baselines, results
 docs/      research log
 ```
