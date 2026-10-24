@@ -35,7 +35,7 @@ def main():
     parser.add_argument("--group", type=int, default=8, help="answers sampled per page")
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--rank", type=int, default=16)
-    parser.add_argument("--micro", type=int, default=4, help="sequences per backward pass")
+    parser.add_argument("--micro", type=int, default=2, help="sequences per backward pass")
     parser.add_argument("--max-new", type=int, default=200)
     parser.add_argument("--eval-every", type=int, default=20)
     parser.add_argument("--seed", type=int, default=0)
@@ -60,13 +60,18 @@ def main():
         r=args.rank, lora_alpha=2 * args.rank, lora_dropout=0.0, task_type="CAUSAL_LM",
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
     ))
+    model.enable_input_require_grads()  # lets gradient checkpointing work with a frozen base
     optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=args.lr, weight_decay=0.0)
 
-    train = extract.pages("train", "ocr") + extract.pages("train", "clean")
+    # Pages the SFT model never saw: on its own training pages it's already near-perfect, so its
+    # sampled answers agree and GRPO gets no signal (seen in the smoke test: 0 of 2 groups informative).
+    train = extract.pages("rl", "ocr") + extract.pages("rl", "clean")
     val = extract.pages("val", "ocr")
     eos = tok.convert_tokens_to_ids("<|im_end|>")
 
     def evaluate() -> float:
+        model.gradient_checkpointing_disable()
+        model.config.use_cache = True
         model.eval()
         right = 0
         for i in range(0, len(val), 8):
@@ -85,7 +90,9 @@ def main():
         chats = [tok.apply_chat_template([{"role": "user", "content": q}], add_generation_prompt=True, tokenize=False) for q in prompts]
         enc = tok(chats, return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
 
-        # 1. sample G answers per page
+        # 1. sample G answers per page (no checkpointing: generation needs the KV cache)
+        model.gradient_checkpointing_disable()
+        model.config.use_cache = True
         model.eval()
         with torch.no_grad():
             seqs = model.generate(
@@ -105,7 +112,9 @@ def main():
             informative += std > 1e-6
             advantages += [(x - mean) / (std + 1e-4) if std > 1e-6 else 0.0 for x in r]
 
-        # 4. policy-gradient step on informative samples
+        # 4. policy-gradient step on informative samples (checkpointing keeps activations small)
+        model.gradient_checkpointing_enable()
+        model.config.use_cache = False
         model.train()
         optimizer.zero_grad()
         idx = [i for i, a in enumerate(advantages) if a != 0.0]
@@ -119,7 +128,9 @@ def main():
             mask = torch.ones_like(comp, dtype=torch.float)
             ended = (comp == eos).float().cumsum(1)
             mask = ((ended - (comp == eos).float()) == 0).float() * (comp != tok.pad_token_id).float()
-            logits = model(input_ids=ids, attention_mask=attn).logits[:, prompt_len - 1 : -1].float()
+            # score the vocabulary only at the answer positions: full-length logits don't fit in memory
+            n_comp = comp.shape[1]
+            logits = model(input_ids=ids, attention_mask=attn, logits_to_keep=n_comp + 1).logits[:, :-1].float()
             logp = torch.log_softmax(logits, -1).gather(-1, comp.unsqueeze(-1)).squeeze(-1)
             per_seq = (logp * mask).sum(1) / mask.sum(1).clamp(min=1)
             adv = torch.tensor([advantages[i] for i in part], device="cuda")

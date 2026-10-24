@@ -24,12 +24,15 @@ from synth.sample import sample_case
 # --- the pages -------------------------------------------------------------------------
 
 DOC_TYPES = ["settlement_letter", "hospital_bill", "policy_schedule", "discharge_summary"]
-SOURCES = [Path("data/docs/index.jsonl"), Path("data/docs_f5/index.jsonl")]
+SOURCES = [Path("data/docs/index.jsonl"), Path("data/docs_f5/index.jsonl"), Path("data/docs_rl/index.jsonl")]
 F2_SPLITS = json.loads(Path("bench/splits.json").read_text())
 
 
 def split_of(seed: int) -> str:
-    """F2's frozen split for the original cases; a fixed hash split (70/15/15) for the F5 additions."""
+    """F2's frozen split for the original cases; a fixed hash split (70/15/15) for the F5 additions;
+    "rl" for cases from seed 20,000 on, which only GRPO sees (never SFT, validation or test)."""
+    if seed >= 20_000:
+        return "rl"
     for name in ("train", "val", "test"):
         if seed in F2_SPLITS[name]:
             return name
