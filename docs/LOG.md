@@ -411,6 +411,29 @@ Plan: [RULES_ENGINE.md](RULES_ENGINE.md). Eligibility → payable (six fixed ste
 traceable to a rule) → auditing each insurer deduction as valid / excessive / invalid /
 needs info. Golden cases in JSON so a TypeScript version can be checked against the same cases.
 
+## 2026-10-24: F5 starts, and a scoring fix I'm disclosing
+
+F5 (extraction) is running in auto mode at my request: Claude sets up and runs each step and
+commits along the way. The success bar was committed before any model ran (`330706b`).
+
+**A correction after the first Gemini run, before any Qwen run was scored.** Gemini 3.1 Pro
+initially scored only ~90% of pages fully correct. Looking at its "errors", most were mine:
+
+- **An unanswerable field.** I asked the policy schedule for "the insured member who was
+  hospitalised", but a schedule lists members and never says who was later hospitalised.
+  Gemini rightly answered null. That field is no longer scored.
+- **₹0 deductions.** Settlement letters often show a deduction column for every bill line,
+  mostly ₹0, so listing `[0, 0, 0, 17588]` is a fair reading of "each deduction". Zeros are
+  now ignored when scoring.
+- **Names with annotations**, e.g. "Krish Karan (Parent)". Parentheticals are now ignored.
+
+The fixes apply identically to every model and were made before any Qwen result was looked at.
+After them, Gemini: 98–99% of pages fully correct on clean text, 96.9% on OCR text. The
+remaining misses are real reading errors (a date off by one day, amounts on noisy OCR).
+
+Lesson: **an eval's first job is to be checked against a strong model.** If the strongest
+model "fails", read the failures before believing them; several were my bugs.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first

@@ -110,6 +110,8 @@ def gold_fields(seed: int, doc_type: str, clean_text: str) -> dict:
         value = truth[field]
         if value is None:
             continue
+        if doc_type == "policy_schedule" and field == "patient_name":
+            continue  # unanswerable: a schedule lists members but never says who was later hospitalised
         visible = {
             "name": lambda v: norm_text(v) in low,
             "id": lambda v: re.sub(r"\s", "", v).lower() in re.sub(r"\s", "", low),
@@ -128,6 +130,7 @@ MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", 
 
 
 def norm_text(s: str) -> str:
+    s = re.sub(r"\([^)]*\)", " ", str(s))  # "Krish Karan (Parent)" → "Krish Karan"
     s = re.sub(r"\b(mr|mrs|ms|smt|shri|sri|dr|master|baby|kumari)\.?\s+", "", str(s).lower())
     return re.sub(r"\s+", " ", s).strip()
 
@@ -224,7 +227,8 @@ def field_correct(kind: str, gold, pred) -> bool:
     if kind == "amounts":
         if not isinstance(pred, list):
             return False
-        got = sorted(a for a in (to_amount(x) for x in pred) if a is not None)
+        # ₹0 rows aren't deductions: letters often show a deduction column for every bill line
+        got = sorted(a for a in (to_amount(x) for x in pred) if a is not None and abs(a) > 0.5)
         return len(got) == len(gold) and all(abs(a - b) <= 1 for a, b in zip(got, sorted(gold)))
     raise ValueError(kind)
 

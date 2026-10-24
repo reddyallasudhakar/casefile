@@ -45,6 +45,44 @@ def build_examples(tok, split: str, variants: list[str], max_len: int):
     return examples, skipped
 
 
+def build_extract_examples(tok, split: str, variants: list[str], max_len: int):
+    """F5: page → the gold JSON (bench/extract.py), loss on the JSON answer only."""
+    from bench import extract
+
+    examples, skipped = [], 0
+    for variant in variants:
+        for page in extract.pages(split, variant):
+            chat = tok.apply_chat_template(
+                [{"role": "user", "content": extract.prompt(page["doc_type"], page["text"])}],
+                add_generation_prompt=True, tokenize=False,
+            )
+            prompt_ids = tok(chat, add_special_tokens=False)["input_ids"]
+            answer = extract.target(page["doc_type"], page["gold"])
+            answer_ids = tok(answer, add_special_tokens=False)["input_ids"] + [tok.convert_tokens_to_ids("<|im_end|>")]
+            if len(prompt_ids) + len(answer_ids) > max_len:
+                skipped += 1
+                continue
+            examples.append((prompt_ids + answer_ids, [-100] * len(prompt_ids) + answer_ids))
+    return examples, skipped
+
+
+def val_extract_accuracy(tok, model) -> float:
+    """F5: page accuracy on the validation pages, OCR text, greedy decoding."""
+    from bench import extract
+
+    tok.padding_side = "left"
+    if getattr(model, "is_gradient_checkpointing", False):
+        model.gradient_checkpointing_disable()  # checkpointing turns off the KV cache, making generation slow
+    model.config.use_cache = True
+    pages = extract.pages("val", "ocr")
+    right = 0
+    for i in range(0, len(pages), 8):
+        chunk = pages[i : i + 8]
+        replies = extract.generate_batch(tok, model, [extract.prompt(p["doc_type"], p["text"]) for p in chunk])
+        right += sum(extract.score_page(p, r)["page_correct"] for p, r in zip(chunk, replies))
+    return right / len(pages)
+
+
 def val_accuracy(tok, model, variant: str = "ocr-masked") -> float:
     pages = pages_of("val", variant)
     right = 0
@@ -56,8 +94,9 @@ def val_accuracy(tok, model, variant: str = "ocr-masked") -> float:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--task", default="doctype", choices=["doctype", "extract"], help="F2 doctype or F5 extract")
     parser.add_argument("--size", default="0.5B", choices=list(QWEN_SIZES))
-    parser.add_argument("--variants", nargs="+", default=list(VARIANTS), choices=list(VARIANTS))
+    parser.add_argument("--variants", nargs="+", help="text variants to train on (default: all for the task)")
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--rank", type=int, default=16)
@@ -74,11 +113,14 @@ def main():
     random.seed(args.seed)
     torch.manual_seed(args.seed)
     name = QWEN_SIZES[args.size]
-    out = Path("adapters") / f"qwen-{args.size}"
+    out = Path("adapters") / (f"qwen-{args.size}" if args.task == "doctype" else f"f5-qwen-{args.size}")
     out.mkdir(parents=True, exist_ok=True)
 
     tok = AutoTokenizer.from_pretrained(name)
-    examples, skipped = build_examples(tok, "train", args.variants, args.max_len)
+    if args.task == "doctype":
+        examples, skipped = build_examples(tok, "train", args.variants or list(VARIANTS), args.max_len)
+    else:
+        examples, skipped = build_extract_examples(tok, "train", args.variants or ["clean", "ocr"], args.max_len)
     print(f"{len(examples)} training examples ({skipped} too long, skipped)")
 
     model = AutoModelForCausalLM.from_pretrained(name, dtype=torch.bfloat16).to("cuda")
@@ -120,12 +162,16 @@ def main():
     train_seconds = time.time() - start
 
     model.eval()
-    val = val_accuracy(tok, model)
-    print(f"validation accuracy (OCR + masked, 107 pages): {val:.1%}")
+    if args.task == "doctype":
+        val = val_accuracy(tok, model)
+        print(f"validation accuracy (OCR + masked, 107 pages): {val:.1%}")
+    else:
+        val = val_extract_accuracy(tok, model)
+        print(f"validation page accuracy (OCR): {val:.1%}")
 
     model.save_pretrained(out)
     (out / "train_log.json").write_text(json.dumps({
-        "base_model": name, "examples": len(examples), "variants": args.variants, "epochs": args.epochs,
+        "base_model": name, "examples": len(examples), "task": args.task, "variants": args.variants, "epochs": args.epochs,
         "lr": args.lr, "rank": args.rank, "accum": args.accum, "trainable_params": trainable,
         "train_seconds": round(train_seconds), "val_accuracy_ocr_masked": val, "loss_curve": log,
     }, indent=1))
