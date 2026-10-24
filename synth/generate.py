@@ -34,18 +34,19 @@ def page_text(html: str) -> str:
     return "\n".join(line for line in lines if line)
 
 
-def plan(per_type: int, max_cases: int) -> list[tuple[int, str]]:
-    """Pick (seed, doc_type) jobs so every document type reaches per_type, using realistic claim files."""
+def plan(per_type: int, max_cases: int, types: list[str] | None = None, start_seed: int = 0) -> list[tuple[int, str]]:
+    """Pick (seed, doc_type) jobs so every wanted document type reaches per_type, using realistic claim files."""
+    wanted = types or list(DOC_SPECS)
     counts, jobs = Counter(), []
-    for seed in range(max_cases):
-        if all(counts[t] >= per_type for t in DOC_SPECS):
+    for seed in range(start_seed, start_seed + max_cases):
+        if all(counts[t] >= per_type for t in wanted):
             break
         case = sample_case(seed)
         for doc_type in doc_types_for(case, random.Random(seed)):
-            if counts[doc_type] < per_type:
+            if doc_type in wanted and counts[doc_type] < per_type:
                 counts[doc_type] += 1
                 jobs.append((seed, doc_type))
-    short = {t: per_type - counts[t] for t in DOC_SPECS if counts[t] < per_type}
+    short = {t: per_type - counts[t] for t in wanted if counts[t] < per_type}
     if short:
         print(f"warning: ran out of cases before filling {short}")
     return jobs
@@ -57,9 +58,11 @@ def main():
     parser.add_argument("--out", type=Path, default=Path("data/docs"))
     parser.add_argument("--workers", type=int, default=8, help="parallel Gemini calls")
     parser.add_argument("--max-cases", type=int, default=5000)
+    parser.add_argument("--types", nargs="+", choices=list(DOC_SPECS), help="only these document types")
+    parser.add_argument("--start-seed", type=int, default=0, help="first case seed; use a new range for a new set")
     args = parser.parse_args()
 
-    jobs = plan(args.per_type, args.max_cases)
+    jobs = plan(args.per_type, args.max_cases, args.types, args.start_seed)
     todo = [(s, t) for s, t in jobs if not (args.out / str(s) / f"{t}.html").exists()]
     print(f"{len(jobs)} documents planned, {len(todo)} to write")
 

@@ -14,7 +14,7 @@ _Last updated: 2026-10-24_
 
 - [ ] **F5: extract claim facts** (settlement letter, bill, policy schedule, discharge summary → JSON). See *F5* below
 - [ ] Set the F5 success bar **before** any results
-- [ ] Commit `docs/RULES_ENGINE.md` + this file
+- [x] Commit `docs/RULES_ENGINE.md` + this file (`8c65581`)
 
 ---
 

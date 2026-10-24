@@ -7,6 +7,7 @@ tested on the text a real upload would actually give: misread characters, broken
 lines out of order. Skips pages already done. Cloud Vision's first 1,000 pages a month are free.
 """
 
+import argparse
 import json
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -23,7 +24,10 @@ def ocr_path(row: dict) -> Path:
 
 
 def main():
-    rows = [json.loads(line) for line in INDEX.open()]
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--index", type=Path, default=INDEX)
+    args = parser.parse_args()
+    rows = [json.loads(line) for line in args.index.open()]
     todo = [r for r in rows if not ocr_path(r).exists()]
     print(f"{len(rows)} pages, {len(todo)} to OCR")
 
