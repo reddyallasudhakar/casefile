@@ -39,6 +39,10 @@ def main():
     parser.add_argument("--max-new", type=int, default=200)
     parser.add_argument("--eval-every", type=int, default=20)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--init", default=None, help="SFT adapter to start from (default adapters/f5-qwen-<size>)")
+    parser.add_argument("--variants", nargs="+", default=["ocr", "clean"], help="text variants of the RL pages")
+    parser.add_argument("--mine", action="store_true", help="keep only prompts where sampled answers disagree")
+    parser.add_argument("--tag", default="", help="suffix for the output folder")
     args = parser.parse_args()
 
     import torch
@@ -48,8 +52,8 @@ def main():
     random.seed(args.seed)
     torch.manual_seed(args.seed)
     name = QWEN_SIZES[args.size]
-    sft = Path("adapters") / f"f5-qwen-{args.size}"
-    out = Path("adapters") / f"f5-grpo-qwen-{args.size}"
+    sft = Path(args.init) if args.init else Path("adapters") / f"f5-qwen-{args.size}"
+    out = Path("adapters") / f"f5-grpo-qwen-{args.size}{args.tag}"
     out.mkdir(parents=True, exist_ok=True)
 
     tok = AutoTokenizer.from_pretrained(name)
@@ -65,7 +69,7 @@ def main():
 
     # Pages the SFT model never saw: on its own training pages it's already near-perfect, so its
     # sampled answers agree and GRPO gets no signal (seen in the smoke test: 0 of 2 groups informative).
-    train = extract.pages("rl", "ocr") + extract.pages("rl", "clean")
+    train = [p for v in args.variants for p in extract.pages("rl", v)]
     val = extract.pages("val", "ocr")
     eos = tok.convert_tokens_to_ids("<|im_end|>")
 
@@ -80,12 +84,40 @@ def main():
             right += sum(extract.score_page(p, r)["page_correct"] for p, r in zip(chunk, replies))
         return right / len(val)
 
-    log = [{"step": 0, "val_page_accuracy": evaluate()}]
+    def sample(page_batch, n):
+        model.gradient_checkpointing_disable()
+        model.config.use_cache = True
+        model.eval()
+        chats = [tok.apply_chat_template([{"role": "user", "content": extract.prompt(p["doc_type"], p["text"])}],
+                                         add_generation_prompt=True, tokenize=False) for p in page_batch]
+        enc = tok(chats, return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
+        with torch.no_grad():
+            seqs = model.generate(**enc, do_sample=True, temperature=1.0, top_p=1.0, top_k=0, max_new_tokens=args.max_new,
+                                  num_return_sequences=n, pad_token_id=tok.pad_token_id)
+        return enc, seqs
+
+    if args.mine:
+        # Hard-page mining: GRPO only learns from prompts where the model's own answers disagree,
+        # so find them up front instead of wasting most of each batch (F5: ~2 of 8 pages informative).
+        kept = []
+        for i in range(0, len(train), args.prompts):
+            chunk = train[i : i + args.prompts]
+            enc, seqs = sample(chunk, args.group)
+            texts = tok.batch_decode(seqs[:, enc["input_ids"].shape[1]:], skip_special_tokens=True)
+            for j, page in enumerate(chunk):
+                r = [extract.reward(page, t) for t in texts[j * args.group : (j + 1) * args.group]]
+                if statistics.pstdev(r) > 1e-6:
+                    kept.append(page)
+        print(f"mining: kept {len(kept)} of {len(train)} prompts where answers disagree", flush=True)
+        train = kept
+
+    best = -1.0
+    log = [{"step": 0, "val_page_accuracy": evaluate(), "mined_prompts": len(train)}]
     print(f"step 0: val page accuracy (OCR) {log[0]['val_page_accuracy']:.1%}", flush=True)
     start = time.time()
 
     for step in range(1, args.steps + 1):
-        batch = random.sample(train, args.prompts)
+        batch = random.sample(train, min(args.prompts, len(train)))
         prompts = [extract.prompt(p["doc_type"], p["text"]) for p in batch]
         chats = [tok.apply_chat_template([{"role": "user", "content": q}], add_generation_prompt=True, tokenize=False) for q in prompts]
         enc = tok(chats, return_tensors="pt", padding=True, add_special_tokens=False).to("cuda")
@@ -146,7 +178,11 @@ def main():
                  "informative_groups": informative, "mean_chars": statistics.mean(lengths)}
         if step % args.eval_every == 0 or step == args.steps:
             entry["val_page_accuracy"] = evaluate()
-            model.save_pretrained(out)
+            model.save_pretrained(out)  # latest
+            if entry["val_page_accuracy"] > best:  # best validation checkpoint, used for the test run
+                best = entry["val_page_accuracy"]
+                model.save_pretrained(out / "best")
+                entry["best_so_far"] = True
         log.append(entry)
         extra = f"  val {entry['val_page_accuracy']:.1%}" if "val_page_accuracy" in entry else ""
         print(f"step {step}/{args.steps}  reward {entry['reward']:.3f}  sample-acc {page_ok:.1%}  "

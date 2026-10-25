@@ -103,6 +103,7 @@ def main():
     parser.add_argument("--accum", type=int, default=16, help="examples per optimizer step")
     parser.add_argument("--max-len", type=int, default=3072)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--tag", default="", help="suffix for the adapter folder, e.g. -aug")
     args = parser.parse_args()
 
     import torch
@@ -113,7 +114,7 @@ def main():
     random.seed(args.seed)
     torch.manual_seed(args.seed)
     name = QWEN_SIZES[args.size]
-    out = Path("adapters") / (f"qwen-{args.size}" if args.task == "doctype" else f"f5-qwen-{args.size}")
+    out = Path("adapters") / ((f"qwen-{args.size}" if args.task == "doctype" else f"f5-qwen-{args.size}") + args.tag)
     out.mkdir(parents=True, exist_ok=True)
 
     tok = AutoTokenizer.from_pretrained(name)

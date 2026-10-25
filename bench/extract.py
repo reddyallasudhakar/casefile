@@ -41,7 +41,8 @@ def split_of(seed: int) -> str:
 
 
 def pages(split: str, variant: str = "clean") -> list[dict]:
-    """Extraction pages in a split: {seed, doc_type, text, gold}. variant: clean | ocr."""
+    """Extraction pages in a split: {seed, doc_type, text, gold}.
+    variant: clean | ocr (the original degraded image) | ocr1, ocr2… (F5b re-degraded copies)."""
     out = []
     for source in SOURCES:
         if not source.exists():
@@ -50,7 +51,7 @@ def pages(split: str, variant: str = "clean") -> list[dict]:
             if row["doc_type"] not in DOC_TYPES or split_of(row["seed"]) != split:
                 continue
             clean_path = Path(row["text"])
-            text_path = clean_path if variant == "clean" else clean_path.with_suffix(".ocr.txt")
+            text_path = clean_path if variant == "clean" else clean_path.with_suffix(f".{variant}.txt")
             if not text_path.exists():
                 continue
             gold = gold_fields(row["seed"], row["doc_type"], clean_path.read_text())
