@@ -1,0 +1,26 @@
+{
+ "name": "Exactly 60 months: non-disclosure can no longer be contested",
+ "source": "adapted from policygaido_backend synthetic test (calendar months, exact anniversary)",
+ "policy": {
+  "policy_start": "2024-01-15",
+  "policy_end": "2025-01-31",
+  "original_inception": "2020-01-15"
+ },
+ "claim": {
+  "admission_date": "2025-01-15",
+  "rejection_ground": "non_disclosure"
+ },
+ "expect": {
+  "eligible": null,
+  "checks": {
+   "ELIG-MORATORIUM": {
+    "passed": true,
+    "elapsed": 60
+   }
+  },
+  "rejection": {
+   "verdict": "invalid",
+   "rule": "ELIG-MORATORIUM"
+  }
+ }
+}

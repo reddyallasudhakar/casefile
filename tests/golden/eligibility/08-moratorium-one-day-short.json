@@ -1,0 +1,25 @@
+{
+ "name": "One day short of 60 months: non-disclosure still contestable",
+ "source": "adapted from policygaido_backend synthetic test (calendar months, day not yet reached)",
+ "policy": {
+  "policy_start": "2024-01-15",
+  "policy_end": "2025-01-31",
+  "original_inception": "2020-01-15"
+ },
+ "claim": {
+  "admission_date": "2025-01-14",
+  "rejection_ground": "non_disclosure"
+ },
+ "expect": {
+  "checks": {
+   "ELIG-MORATORIUM": {
+    "passed": false,
+    "elapsed": 59
+   }
+  },
+  "rejection": {
+   "verdict": "needs_info",
+   "rule": "ELIG-MORATORIUM"
+  }
+ }
+}

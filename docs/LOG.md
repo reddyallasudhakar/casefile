@@ -495,6 +495,30 @@ copying digits off a noisy page isn't that.
 One process slip: the first launch failed in seconds because `--tag -aug` reads as two flags;
 `--tag=-aug` fixed it. Cheap to catch only because the pipeline fails fast.
 
+## 2026-10-25: Rules engine R1: eligibility, with golden cases and CI
+
+The first deterministic piece of the engine: is the policy in force, which waiting periods
+apply and have they passed, has the 60-month moratorium kicked in, and does a rejection on
+those grounds stand (valid / invalid / needs info)?
+
+Decisions:
+- **One continuous-inception rule:** the earliest valid date among original inception,
+  previous insurer's inception and current start. My backend used three different rules.
+- **Calendar months**, matching the backend's own tests (2020-01-15 → 2025-01-15 = 60).
+- **The moratorium is a shield, not a gate:** it doesn't decide whether a claim is payable;
+  it decides whether a non-disclosure or pre-existing-disease rejection can stand.
+- **"Needs info" is a first-class answer.** Non-disclosure within the moratorium depends on what
+  was disclosed; an exclusion depends on the policy wording. The engine says so rather than guess.
+
+**20 golden cases, as JSON:** 8 adapted from the backend's synthetic tests (porting credit,
+initial wait, waived waits, 60 vs 59 months, missing dates), worked examples from the rules, and
+one per backend inconsistency I'm fixing (e.g. the 30-day wait measured from the renewal date).
+All pass. Because a suite that passes first time proves little, I reintroduced the backend's
+renewal-date bug on purpose: 2 cases failed, as they should. CI now runs the cases and the
+schema checks on every push, installing only `pydantic` and `pytest` so it takes seconds.
+
+Next: R2, the payable amount, which needs my call on the order deductions apply in.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first

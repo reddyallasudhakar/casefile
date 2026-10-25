@@ -1,0 +1,27 @@
+{
+ "name": "Accident on day 8: no initial waiting period",
+ "source": "worked example from the rule",
+ "policy": {
+  "policy_start": "2024-03-01"
+ },
+ "claim": {
+  "admission_date": "2024-03-09",
+  "is_accident": true,
+  "rejection_ground": "initial_waiting_period"
+ },
+ "expect": {
+  "eligible": true,
+  "checks": {
+   "ELIG-INITIAL": {
+    "applies": false
+   },
+   "ELIG-PED": {
+    "applies": false
+   }
+  },
+  "rejection": {
+   "verdict": "invalid",
+   "rule": "ELIG-INITIAL"
+  }
+ }
+}

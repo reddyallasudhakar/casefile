@@ -1,0 +1,17 @@
+{
+ "name": "No admission date: nothing can be decided",
+ "source": "adapted from policygaido_backend synthetic test (S8, missing dates)",
+ "policy": {
+  "policy_start": "2024-01-01"
+ },
+ "claim": {
+  "rejection_ground": "initial_waiting_period"
+ },
+ "expect": {
+  "eligible": null,
+  "rejection": {
+   "verdict": "needs_info",
+   "rule": null
+  }
+ }
+}

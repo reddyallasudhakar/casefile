@@ -6,7 +6,7 @@ full plan in `llm-training-lab/PROJECT_PLAN.md`.
 
 Legend: `[x]` done · `[~]` in progress / partly done · `[ ]` to do
 
-_Last updated: 2026-10-25 (after F5b)_
+_Last updated: 2026-10-25 (after rules engine R1)_
 
 ---
 
@@ -29,7 +29,7 @@ _Last updated: 2026-10-25 (after F5b)_
 - [x] IPv6 fix for Python (`synth/net.py`)
 - [x] Research log (`docs/LOG.md`), cost analysis (`docs/COSTS.md`)
 - [ ] Hugging Face login (needed to publish models)
-- [ ] CI on GitHub Actions (run schema checks and golden tests on every push)
+- [x] CI on GitHub Actions (golden tests + schema checks on every push)
 
 ## Synthetic data
 
@@ -87,9 +87,12 @@ copy every amount, date and ID exactly, as well as Gemini? And does GRPO improve
 
 - [x] Backend review: most money rules are only in LLM prompts; inconsistencies listed
 - [x] Plan written ([RULES_ENGINE.md](RULES_ENGINE.md))
-- [ ] Decide: continuous-inception rule, order of deductions, products to model
+- [x] Continuous inception = earliest valid date (adopted in R1)
+- [ ] Decide: order of deductions (R2), products to model
 - [ ] Fill clause citations from the IRDAI Master Circular 2024 (hands-on reading)
-- [ ] R1 eligibility · R2 payable · R3 audit · R4 CI · R5 sampler injects insurer mistakes
+- [x] **R1 eligibility**: 20 golden cases passing, mutation-tested (`rules/`, `tests/golden/eligibility/`)
+- [x] **R4 CI** on GitHub Actions (golden cases + schema checks on every push)
+- [ ] R2 payable · R3 audit · R5 sampler injects insurer mistakes
 - Trigger: build when the adjudication task (T3) starts; minimal version (payable only) may be enough
 
 ## Later phases (from the project plan)
@@ -121,7 +124,7 @@ copy every amount, date and ID exactly, as well as Gemini? And does GRPO improve
 ## Open decisions
 
 - [x] F5 success bar (set in auto mode, committed `330706b` before results)
-- [ ] Rules-engine defaults (continuous inception, deduction order)
+- [~] Rules-engine defaults: continuous inception adopted; deduction order pending (R2)
 - [ ] Whether registration consent covers a private real-page test set
 
 ## Known issues and risks

@@ -1,0 +1,27 @@
+{
+ "name": "Pre-existing rejection at 72 months: barred by the moratorium",
+ "source": "adapted from policygaido_backend synthetic test (moratorium gating, non-disclosure case)",
+ "policy": {
+  "policy_start": "2024-01-01",
+  "policy_end": "2024-12-31",
+  "original_inception": "2018-01-01"
+ },
+ "claim": {
+  "admission_date": "2024-01-10",
+  "condition_is_ped": true,
+  "rejection_ground": "pre_existing_disease_waiting_period"
+ },
+ "expect": {
+  "eligible": true,
+  "checks": {
+   "ELIG-MORATORIUM": {
+    "passed": true,
+    "elapsed": 72
+   }
+  },
+  "rejection": {
+   "verdict": "invalid",
+   "rule": "ELIG-MORATORIUM"
+  }
+ }
+}

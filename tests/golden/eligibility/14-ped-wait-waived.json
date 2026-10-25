@@ -1,0 +1,27 @@
+{
+ "name": "PED wait waived by a rider: pre-existing rejection invalid",
+ "source": "adapted from policygaido_backend synthetic test (S4, waived period not in play)",
+ "policy": {
+  "policy_start": "2024-01-01",
+  "policy_end": "2024-12-31",
+  "original_inception": "2023-01-01",
+  "ped_wait_waived": true
+ },
+ "claim": {
+  "admission_date": "2024-06-01",
+  "condition_is_ped": true,
+  "rejection_ground": "pre_existing_disease_waiting_period"
+ },
+ "expect": {
+  "eligible": true,
+  "checks": {
+   "ELIG-PED": {
+    "applies": false
+   }
+  },
+  "rejection": {
+   "verdict": "invalid",
+   "rule": "ELIG-PED"
+  }
+ }
+}

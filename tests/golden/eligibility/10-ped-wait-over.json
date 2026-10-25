@@ -1,0 +1,30 @@
+{
+ "name": "Pre-existing condition at 52 months: PED wait over, rejection invalid",
+ "source": "worked example from the rule",
+ "policy": {
+  "policy_start": "2024-06-01",
+  "policy_end": "2025-05-31",
+  "original_inception": "2020-06-01"
+ },
+ "claim": {
+  "admission_date": "2024-10-01",
+  "condition_is_ped": true,
+  "rejection_ground": "pre_existing_disease_waiting_period"
+ },
+ "expect": {
+  "eligible": true,
+  "checks": {
+   "ELIG-PED": {
+    "passed": true,
+    "elapsed": 52
+   },
+   "ELIG-MORATORIUM": {
+    "passed": false
+   }
+  },
+  "rejection": {
+   "verdict": "invalid",
+   "rule": "ELIG-PED"
+  }
+ }
+}

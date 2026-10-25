@@ -1,0 +1,25 @@
+{
+ "name": "Admitted on day 8: initial waiting period not cleared",
+ "source": "adapted from policygaido_backend synthetic test (S2/3, first consultation on day 8)",
+ "policy": {
+  "policy_start": "2024-03-01"
+ },
+ "claim": {
+  "admission_date": "2024-03-09",
+  "condition_is_ped": false,
+  "rejection_ground": "initial_waiting_period"
+ },
+ "expect": {
+  "eligible": false,
+  "checks": {
+   "ELIG-INITIAL": {
+    "passed": false,
+    "elapsed": 8
+   }
+  },
+  "rejection": {
+   "verdict": "valid",
+   "rule": "ELIG-INITIAL"
+  }
+ }
+}

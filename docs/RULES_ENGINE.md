@@ -137,15 +137,16 @@ RL reward.
 
 | | Milestone | Done when |
 |---|---|---|
-| R1 | Eligibility (A) + golden cases | date-maths cases pass, including those adapted from the backend |
+| R1 ✅ | Eligibility (A) + golden cases | **Done 2026-10-25:** `rules/eligibility.py`, 20 golden cases in `tests/golden/eligibility/` (8 adapted from the backend's synthetic tests, 1 per backend inconsistency fixed), all passing; a mutation test (reintroducing the renewal-date bug) is caught |
 | R2 | Payable (B) + golden cases | hand-worked settlements pass to the rupee, with a full audit trail |
 | R3 | Audit (C) | every verdict type covered by golden cases |
-| R4 | CI on GitHub Actions | tests run on every push |
+| R4 ✅ | CI on GitHub Actions | **Done 2026-10-25:** `.github/workflows/tests.yml` runs golden cases and schema checks on every push |
 | R5 | Sampler uses the engine, with injected insurer mistakes | regenerated cases carry engine labels |
 
-## Decisions needed before R1
+## Decisions
 
-1. **Continuous-inception rule:** earliest valid date (proposed above)?
+1. **Continuous-inception rule:** ✅ adopted for R1: the earliest valid date. (Overrule if
+   your claims experience says insurers treat it differently.)
 2. **Order of deductions** (B1–B6): does it match how insurers actually apply them in your
    experience?
 3. **Clause references:** the IRDAI Master Circular 2024 should be read in the original, and

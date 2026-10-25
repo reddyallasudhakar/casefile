@@ -1,0 +1,32 @@
+{
+ "name": "Specific-disease rejection for a condition the policy doesn't list",
+ "source": "worked example from the rule",
+ "policy": {
+  "policy_start": "2024-01-01",
+  "policy_end": "2024-12-31",
+  "specific_waits": [
+   {
+    "condition": "cataract",
+    "months": 24
+   }
+  ]
+ },
+ "claim": {
+  "admission_date": "2024-05-01",
+  "condition": "appendicitis",
+  "condition_is_ped": false,
+  "rejection_ground": "specific_disease_waiting_period"
+ },
+ "expect": {
+  "eligible": true,
+  "checks": {
+   "ELIG-SPECIFIC": {
+    "applies": false
+   }
+  },
+  "rejection": {
+   "verdict": "needs_info",
+   "rule": "ELIG-SPECIFIC"
+  }
+ }
+}

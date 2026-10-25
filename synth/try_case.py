@@ -109,3 +109,4 @@ for mark, name, msg in results:
     print(f"{mark} {name}" + (f" — {msg}" if msg else ""))
 passed = sum(r[0] == "✓" for r in results)
 print(f"\n{passed}/{len(results)} checks pass")
+raise SystemExit(0 if passed == len(results) else 1)  # non-zero so CI fails on any broken check

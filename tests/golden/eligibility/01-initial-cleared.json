@@ -1,0 +1,26 @@
+{
+ "name": "Admitted on day 35: initial waiting period cleared",
+ "source": "adapted from policygaido_backend synthetic test (S2/3)",
+ "policy": {
+  "policy_start": "2024-03-01"
+ },
+ "claim": {
+  "admission_date": "2024-04-05",
+  "condition_is_ped": false,
+  "rejection_ground": "initial_waiting_period"
+ },
+ "expect": {
+  "eligible": true,
+  "continuous_inception": "2024-03-01",
+  "checks": {
+   "ELIG-INITIAL": {
+    "passed": true,
+    "elapsed": 35
+   }
+  },
+  "rejection": {
+   "verdict": "invalid",
+   "rule": "ELIG-INITIAL"
+  }
+ }
+}

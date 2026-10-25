@@ -1,0 +1,17 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  rules-and-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      # Only the light dependencies: the rules engine and the case schema don't need the ML stack.
+      - name: Golden cases (rules engine)
+        run: uv run --no-project --python 3.12 --with pydantic --with pytest pytest -q
+      - name: Claim case schema checks
+        run: uv run --no-project --python 3.12 --with pydantic python -m synth.try_case

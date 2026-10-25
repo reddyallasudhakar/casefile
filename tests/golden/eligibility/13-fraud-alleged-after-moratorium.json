@@ -1,0 +1,20 @@
+{
+ "name": "After the moratorium but fraud alleged: not protected",
+ "source": "worked example from the rule",
+ "policy": {
+  "policy_start": "2024-01-01",
+  "policy_end": "2024-12-31",
+  "original_inception": "2018-01-01"
+ },
+ "claim": {
+  "admission_date": "2024-01-10",
+  "fraud_alleged": true,
+  "rejection_ground": "non_disclosure"
+ },
+ "expect": {
+  "rejection": {
+   "verdict": "needs_info",
+   "rule": "ELIG-MORATORIUM"
+  }
+ }
+}

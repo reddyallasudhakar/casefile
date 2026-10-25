@@ -1,0 +1,28 @@
+{
+ "name": "Renewed 9 days ago, covered since 2021: initial wait long cleared",
+ "source": "deliberate fix of a policygaido_backend inconsistency (backend measures the 30 days from the renewal date)",
+ "policy": {
+  "policy_start": "2024-04-01",
+  "policy_end": "2025-03-31",
+  "original_inception": "2021-04-01"
+ },
+ "claim": {
+  "admission_date": "2024-04-10",
+  "condition_is_ped": false,
+  "rejection_ground": "initial_waiting_period"
+ },
+ "expect": {
+  "eligible": true,
+  "continuous_inception": "2021-04-01",
+  "checks": {
+   "ELIG-INITIAL": {
+    "passed": true,
+    "elapsed": 1105
+   }
+  },
+  "rejection": {
+   "verdict": "invalid",
+   "rule": "ELIG-INITIAL"
+  }
+ }
+}
