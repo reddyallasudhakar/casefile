@@ -6,14 +6,14 @@ full plan in `llm-training-lab/PROJECT_PLAN.md`.
 
 Legend: `[x]` done · `[~]` in progress / partly done · `[ ]` to do
 
-_Last updated: 2026-10-24 (after F5)_
+_Last updated: 2026-10-25 (after F5b)_
 
 ---
 
 ## ▶ Now / next
 
 - [x] **F5: extract claim facts**: done and published ([results/f5.md](../results/f5.md))
-- [ ] Decide what's next: an F5 follow-up (more RL pages / SFT on more OCR data), F3/F4 sprints, or the rules engine
+- [ ] Decide what's next: F3/F4 sprints, the rules engine, or more OCR-augmentation work on F5
 - [x] Commit `docs/RULES_ENGINE.md` + this file (`8c65581`)
 
 ---
@@ -79,7 +79,8 @@ copy every amount, date and ID exactly, as well as Gemini? And does GRPO improve
 - [x] Results page + log
 - [x] **Result: clean text, SFT 1.5B/3B = 98% pages fully right (Gemini 99%); OCR, 86–88% vs Gemini 97% (gap real, bar 1 not met); GRPO +1 page, not significant (bar 2 not met); no reward hacking**
 - [x] +400 extraction pages (seeds 10,000+) and 200 RL-only pages (seeds 20,000+)
-- [ ] Follow-up: more RL pages, harder-page selection, best-checkpoint selection; compare with SFT on more OCR data
+- [x] **F5b follow-up:** OCR augmentation (4 readings per page) → 1.5B OCR 85.7% → 90.8%, gap to Gemini halved (not yet significant). GRPO v2 with 1,000 prompts, hard-page mining and best checkpoint: no gain
+- [ ] Next lever if continuing: more degradation types and more pages for SFT (not more RL); try augmented SFT at 3B
 - [ ] Publish the best extraction adapter on Hugging Face
 
 ## Rules engine (deferred; designed)

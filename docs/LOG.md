@@ -468,6 +468,33 @@ remote after pushing instead of assuming.
 Next for this line of work: more RL pages and harder-page selection, and the simpler baseline
 of SFT on more OCR examples, before concluding anything about RL in general.
 
+## 2026-10-25: F5b: closing the OCR gap; supervised variety beat RL
+
+I asked for a follow-up aimed at F5's weak spot (OCR text, 86% vs Gemini's 97%): more OCR
+data for SFT, and a better-designed GRPO run. Success bar pre-registered first (`f0d92cd`).
+
+**OCR augmentation, the cheap version of "more data".** Instead of generating new pages with
+Gemini (~$10+), each training and RL page's clean image was degraded 3 more ways and OCR'd
+(~$3). The model then sees every page through 4 different kinds of OCR noise. Result on 1.5B:
+**OCR 85.7% → 90.8%**, gap to Gemini halved (11 → 6 points). Not yet statistically conclusive
+(6 vs 1 pages, p = 0.125), and clean text dipped 3 points, probably because the training mix
+became 4 OCR copies per clean one.
+
+**GRPO v2, redesigned around F5's failure:** 1,000 RL prompts instead of 400, hard-page mining
+(keep only prompts where the model's 8 answers disagree: 444 kept), and keeping the best
+validation checkpoint instead of the last. Mining did what it was meant to: ~5 of 8 groups
+informative early on, against ~2 before. **But the outcome repeated F5:** validation peaked
+at +1 page by step 10, then fell while training reward rose. On test: no difference.
+
+My takeaway: **for reading through OCR noise, varied supervised examples were the lever; RL
+wasn't.** A strong SFT model leaves few *consistent* mistakes for RL to fix, much of the
+remaining error is unrecoverable from the OCR text, and a reward over 4–5 fields per page is
+a blunt signal. RL with verifiable rewards shines where the model must *reason* to the answer;
+copying digits off a noisy page isn't that.
+
+One process slip: the first launch failed in seconds because `--tag -aug` reads as two flags;
+`--tag=-aug` fixed it. Cheap to catch only because the pipeline fails fast.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first

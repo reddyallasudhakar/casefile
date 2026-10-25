@@ -19,8 +19,8 @@ in the **[research log](docs/LOG.md)**.
 
 **F5: reading claim documents precisely (latest).** Fine-tuned Qwen 1.5B/3B extract every field
 right on 98% of clean pages, matching Gemini (99%), but only 86–88% on OCR'd pages against
-Gemini's 97%, a real gap. A first GRPO run on top didn't close it, and the write-up explains
-why. **[Full results →](results/f5.md)**
+Gemini's 97%. Training on four OCR readings of each page lifted OCR accuracy to 91% and halved
+the gap; two GRPO runs didn't help, and the write-up explains why. **[Full results →](results/f5.md)**
 
 **F2: sorting claim documents.** A fine-tuned 0.5B model matches Gemini: 100% on clean text and
 98.4% on OCR'd pages with headings hidden, against 79.8% for the best *prompted* 3B model.
@@ -37,7 +37,7 @@ why. **[Full results →](results/f5.md)**
 |---|---|---|
 | Synthetic data | 800 claim pages (10 document types × 80) generated from 314 sampled claim cases, each with a clean render and a phone-photo or scanner copy | ✅ done |
 | F2: document type | Classify a page into 10 types; baselines → LoRA fine-tune → compare with Gemini | ✅ **Fine-tuned Qwen 0.5B matches Gemini: 100% on clean text, 98.4% on OCR + hidden titles (from 18.5% zero-shot), statistically indistinguishable.** 8 min to train on one GPU, 34 MB adapter ([results/f2.md](results/f2.md)) |
-| F5: extraction | Page → JSON (amounts, dates, IDs); baselines → SFT at 3 sizes → GRPO | ✅ **Clean text: fine-tuned 1.5B/3B = 98% of pages fully right, matching Gemini. OCR text: 86–88% vs Gemini 97% (gap is real). GRPO: no significant gain** ([results/f5.md](results/f5.md)) |
+| F5: extraction | Page → JSON (amounts, dates, IDs); baselines → SFT at 3 sizes → GRPO | ✅ **Clean text: fine-tuned 1.5B/3B = 98% of pages fully right, matching Gemini. OCR text: 86–88% vs Gemini 97%; OCR augmentation → 91%, halving the gap. GRPO (twice): no gain** ([results/f5.md](results/f5.md)) |
 | F0: reading | Which OCR reads amounts, dates and policy numbers correctly | 🟡 Cloud Vision checked; engine comparison to do |
 | Rules engine | What the insurer should have paid; audits each deduction | 📝 designed ([docs/RULES_ENGINE.md](docs/RULES_ENGINE.md)) |
 | Later | Adjudication with RL on the engine's verdicts, distillation, demo | planned |
