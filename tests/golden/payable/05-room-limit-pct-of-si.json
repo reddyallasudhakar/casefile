@@ -1,0 +1,37 @@
+{
+ "name": "Room eligibility 1% of ₹3 lakh = ₹3,000/day",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 300000,
+  "room_rent_limit": {
+   "kind": "pct_si_per_day",
+   "value": 1
+  }
+ },
+ "bill": {
+  "room_rate_per_day": 6000,
+  "room_days": 3,
+  "lines": [
+   {
+    "category": "room",
+    "amount": 18000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 24000
+   },
+   {
+    "category": "pharmacy",
+    "amount": 10000
+   }
+  ]
+ },
+ "expect": {
+  "billed": 52000,
+  "payable": 31000,
+  "deducted": {
+   "PAY-ROOMRENT": 9000,
+   "PAY-PROPORTIONATE": 12000
+  }
+ }
+}

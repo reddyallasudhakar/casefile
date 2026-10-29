@@ -1,0 +1,22 @@
+{
+ "name": "₹60,000 sum insured with ₹10,000 already used: capped at ₹50,000",
+ "source": "adapted from policygaido_backend synthetic test (SI headroom)",
+ "coverage": {
+  "sum_insured": 60000,
+  "sum_insured_used": 10000
+ },
+ "bill": {
+  "lines": [
+   {
+    "category": "professional_fees",
+    "amount": 100000
+   }
+  ]
+ },
+ "expect": {
+  "payable": 50000,
+  "deducted": {
+   "PAY-SICAP": 50000
+  }
+ }
+}

@@ -41,7 +41,7 @@ the gap; two GRPO runs didn't help, and the write-up explains why. **[Full resul
 | F2: document type | Classify a page into 10 types; baselines → LoRA fine-tune → compare with Gemini | ✅ **Fine-tuned Qwen 0.5B matches Gemini: 100% on clean text, 98.4% on OCR + hidden titles (from 18.5% zero-shot), statistically indistinguishable.** 8 min to train on one GPU, 34 MB adapter ([results/f2.md](results/f2.md)) |
 | F5: extraction | Page → JSON (amounts, dates, IDs); baselines → SFT at 3 sizes → GRPO | ✅ **Clean text: fine-tuned 1.5B/3B = 98% of pages fully right, matching Gemini. OCR text: 86–88% vs Gemini 97%; OCR augmentation → 91%, halving the gap. GRPO (twice): no gain** ([results/f5.md](results/f5.md)) |
 | F0: reading | Which OCR reads amounts, dates and policy numbers correctly | 🟡 Cloud Vision checked; engine comparison to do |
-| Rules engine | What the insurer should have paid; audits each deduction | 🔄 **R1 eligibility done:** waiting periods, moratorium, rejection audits; 20 golden cases, CI on every push ([docs/RULES_ENGINE.md](docs/RULES_ENGINE.md)) |
+| Rules engine | What the insurer should have paid; audits each deduction | 🔄 **R1 eligibility + R2 payable done:** waiting periods, moratorium and rejection audits; the six-step payable calculation with every rupee traced to a rule; 38 golden cases, CI on every push ([docs/RULES_ENGINE.md](docs/RULES_ENGINE.md)) |
 | Later | Adjudication with RL on the engine's verdicts, distillation, demo | planned |
 
 ## How the data is made
@@ -59,7 +59,7 @@ insurers and hospitals are fictional. No real customer data is used anywhere in 
 ```
 synth/     case schema, case sampler, document writer, renderer, degrader, generate.py
 bench/     split (frozen), OCR, title masking, baselines, finetune.py, extract.py (F5), grpo.py, score.py, reports
-rules/     rules engine: eligibility (waiting periods, moratorium) and rejection audits
+rules/     rules engine: eligibility and rejection audits (R1), payable amount with audit trail (R2)
 tests/     golden cases (JSON) for the rules engine, run in CI
 results/   one file per task: success bar, baselines, results
 docs/      research log, progress tracker, RL primer, rules-engine plan, costs

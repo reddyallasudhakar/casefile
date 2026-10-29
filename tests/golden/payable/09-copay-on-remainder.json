@@ -1,0 +1,30 @@
+{
+ "name": "10% co-pay on ₹1 lakh",
+ "source": "adapted from policygaido_backend synthetic test (co-pay after deductions)",
+ "coverage": {
+  "sum_insured": 500000,
+  "copay_pct": 10
+ },
+ "bill": {
+  "lines": [
+   {
+    "category": "room",
+    "amount": 20000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 50000
+   },
+   {
+    "category": "pharmacy",
+    "amount": 30000
+   }
+  ]
+ },
+ "expect": {
+  "payable": 90000,
+  "deducted": {
+   "PAY-COPAY": 10000
+  }
+ }
+}

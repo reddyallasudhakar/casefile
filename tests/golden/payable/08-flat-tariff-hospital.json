@@ -1,0 +1,49 @@
+{
+ "name": "Same as case 04, but the hospital's tariff doesn't vary by room: no proportionate",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000,
+  "room_rent_limit": {
+   "kind": "per_day",
+   "value": 5000
+  }
+ },
+ "bill": {
+  "room_rate_per_day": 8000,
+  "room_days": 4,
+  "flat_tariff_hospital": true,
+  "lines": [
+   {
+    "category": "room",
+    "amount": 32000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 40000
+   },
+   {
+    "category": "procedure_charges",
+    "amount": 20000
+   },
+   {
+    "category": "pharmacy",
+    "amount": 18000
+   },
+   {
+    "category": "investigations",
+    "amount": 12000
+   },
+   {
+    "category": "implants",
+    "amount": 30000
+   }
+  ]
+ },
+ "expect": {
+  "payable": 140000,
+  "deducted": {
+   "PAY-ROOMRENT": 12000,
+   "PAY-PROPORTIONATE": 0
+  }
+ }
+}

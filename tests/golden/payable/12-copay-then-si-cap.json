@@ -1,0 +1,23 @@
+{
+ "name": "20% co-pay first, then the ₹2 lakh sum-insured cap",
+ "source": "adapted from policygaido_backend synthetic test (co-pay applied before the SI cap)",
+ "coverage": {
+  "sum_insured": 200000,
+  "copay_pct": 20
+ },
+ "bill": {
+  "lines": [
+   {
+    "category": "professional_fees",
+    "amount": 342000
+   }
+  ]
+ },
+ "expect": {
+  "payable": 200000,
+  "deducted": {
+   "PAY-COPAY": 68400,
+   "PAY-SICAP": 73600
+  }
+ }
+}

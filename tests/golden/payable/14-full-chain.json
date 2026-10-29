@@ -1,0 +1,58 @@
+{
+ "name": "Every step at once: non-payables, room rent, proportionate, 10% co-pay, SI headroom",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000,
+  "sum_insured_used": 100000,
+  "copay_pct": 10,
+  "room_rent_limit": {
+   "kind": "pct_si_per_day",
+   "value": 1
+  }
+ },
+ "bill": {
+  "room_rate_per_day": 7000,
+  "room_days": 5,
+  "lines": [
+   {
+    "category": "room",
+    "amount": 35000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 50000
+   },
+   {
+    "category": "procedure_charges",
+    "amount": 30000
+   },
+   {
+    "category": "pharmacy",
+    "amount": 25000
+   },
+   {
+    "category": "investigations",
+    "amount": 15000
+   },
+   {
+    "category": "consumables",
+    "amount": 8000
+   },
+   {
+    "category": "non_medical",
+    "amount": 2000
+   }
+  ]
+ },
+ "expect": {
+  "billed": 165000,
+  "payable": 109929,
+  "deducted": {
+   "PAY-NONPAYABLE": 10000,
+   "PAY-ROOMRENT": 10000,
+   "PAY-PROPORTIONATE": 22857,
+   "PAY-COPAY": 12214,
+   "PAY-SICAP": 0
+  }
+ }
+}

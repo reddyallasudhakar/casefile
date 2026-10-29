@@ -1,0 +1,49 @@
+{
+ "name": "₹8,000 room vs ₹5,000 eligibility: excess + proportionate on doctors/procedure only",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000,
+  "room_rent_limit": {
+   "kind": "per_day",
+   "value": 5000
+  }
+ },
+ "bill": {
+  "room_rate_per_day": 8000,
+  "room_days": 4,
+  "lines": [
+   {
+    "category": "room",
+    "amount": 32000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 40000
+   },
+   {
+    "category": "procedure_charges",
+    "amount": 20000
+   },
+   {
+    "category": "pharmacy",
+    "amount": 18000
+   },
+   {
+    "category": "investigations",
+    "amount": 12000
+   },
+   {
+    "category": "implants",
+    "amount": 30000
+   }
+  ]
+ },
+ "expect": {
+  "billed": 152000,
+  "payable": 117500,
+  "deducted": {
+   "PAY-ROOMRENT": 12000,
+   "PAY-PROPORTIONATE": 22500
+  }
+ }
+}

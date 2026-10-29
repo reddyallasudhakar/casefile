@@ -36,3 +36,39 @@ RULES = {
         "source": "IRDAI Master Circular on Health Insurance 2024: moratorium period (verify)",
     },
 }
+
+RULES.update({
+    "PAY-NONPAYABLE": {
+        "rule": "Non-medical items aren't payable; consumables (gloves, masks, kits) are payable only "
+                "if the policy covers them.",
+        "source": "IRDAI list of non-payable items (Annexure, health insurance guidelines) (verify)",
+    },
+    "PAY-ROOMRENT": {
+        "rule": "Room rent above the per-day eligibility (fixed, or % of sum insured) is deducted: "
+                "(actual rate − eligible rate) × days.",
+        "source": "Policy schedule: room rent limit",
+    },
+    "PAY-PROPORTIONATE": {
+        "rule": "When the room exceeds eligibility, charges that scale with room category (doctors' "
+                "fees, procedure and OT charges) are paid at eligible rate ÷ actual rate. Not applied "
+                "to ICU, pharmacy, consumables, implants or diagnostics, nor where the hospital's "
+                "tariff doesn't vary by room category.",
+        "source": "IRDAI guidelines on proportionate deduction (2020) (verify)",
+    },
+    "PAY-SUBLIMIT": {
+        "rule": "A condition with a sub-limit (e.g. cataract) is paid up to that cap.",
+        "source": "Policy schedule: sub-limits",
+    },
+    "PAY-DEDUCTIBLE": {
+        "rule": "The deductible is subtracted from the admissible amount before co-pay.",
+        "source": "Policy schedule: deductible",
+    },
+    "PAY-COPAY": {
+        "rule": "Co-pay is the policyholder's percentage share of what remains after all the above.",
+        "source": "Policy schedule: co-payment",
+    },
+    "PAY-SICAP": {
+        "rule": "The payable amount can't exceed the sum insured still available this year.",
+        "source": "Policy schedule: sum insured",
+    },
+})

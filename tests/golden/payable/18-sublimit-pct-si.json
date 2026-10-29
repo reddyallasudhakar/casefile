@@ -1,0 +1,28 @@
+{
+ "name": "Sub-limit as 10% of ₹3 lakh = ₹30,000",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 300000,
+  "sub_limits": [
+   {
+    "condition": "cataract",
+    "pct_si": 10
+   }
+  ]
+ },
+ "bill": {
+  "condition": "cataract",
+  "lines": [
+   {
+    "category": "procedure_charges",
+    "amount": 45000
+   }
+  ]
+ },
+ "expect": {
+  "payable": 30000,
+  "deducted": {
+   "PAY-SUBLIMIT": 15000
+  }
+ }
+}

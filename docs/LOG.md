@@ -519,6 +519,32 @@ schema checks on every push, installing only `pydantic` and `pytest` so it takes
 
 Next: R2, the payable amount, which needs my call on the order deductions apply in.
 
+## 2026-10-29: Rules engine R2: the payable amount, every rupee traced
+
+I approved the order: **non-payable items → room-rent limit and proportionate deduction →
+sub-limit → deductible → co-pay → sum-insured cap.** Order matters: ₹1 lakh with a ₹25,000
+deductible and 20% co-pay is ₹60,000 this way round and ₹55,000 the other way (golden case 10).
+
+`rules/payable.py` returns the payable amount *and* the trail: each step's rule, the rupees it
+removed, the running total and a one-line reason in Indian number format. The tests also check
+that billed − Σ deductions = payable on every case, so no rupee goes missing.
+
+Details I wanted right:
+- **Proportionate deduction hits only charges that scale with the room** (doctors' fees,
+  procedure/OT charges). ICU, pharmacy, consumables, implants and diagnostics are exempt, and a
+  hospital whose tariff doesn't vary by room category gets no proportionate deduction at all.
+- **Half-up rounding with exact decimals.** Python's `round()` sends ₹1,234.50 to ₹1,234; money
+  arithmetic sends it to ₹1,235.
+- **"Incomplete" instead of a guess:** a room-rent limit with no known room rate is flagged.
+
+18 golden cases, all passing. Mutation tests: applying the proportionate deduction to pharmacy
+and diagnostics (a common insurer overreach) fails 4 cases; banker's rounding fails 1.
+
+**A finding about my own data:** the synthetic sampler applies proportionate deductions to
+investigations, which the engine treats as exempt. So the synthetic insurer has been making
+exactly that mistake. That's useful for R5, where the sampler will inject insurer errors on
+purpose and the engine will label them.
+
 ## Surprises along the way
 
 - **My network hands out IPv6 addresses but doesn't route IPv6.** Python tries IPv6 first

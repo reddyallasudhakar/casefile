@@ -47,3 +47,50 @@ class ClaimFacts(BaseModel):
     condition_is_ped: bool | None = None  # established as pre-existing? None = unknown
     fraud_alleged: bool = False  # the moratorium doesn't protect proven fraud
     rejection_ground: RejectionGround | None = None
+
+
+# --- R2: what the payable calculation needs --------------------------------------------
+
+BillCategory = Literal[
+    "room", "icu", "professional_fees", "procedure_charges", "pharmacy", "investigations",
+    "consumables", "implants", "non_medical", "other",
+]
+
+
+class BillLine(BaseModel):
+    category: BillCategory
+    amount: float = Field(ge=0)
+    description: str = ""
+
+
+class RoomRentLimit(BaseModel):
+    """Per-day room eligibility: a fixed amount, or a percentage of the sum insured."""
+
+    kind: Literal["per_day", "pct_si_per_day"]
+    value: float = Field(gt=0)
+
+
+class SubLimit(BaseModel):
+    """A cap on what's payable for a condition, e.g. cataract ₹40,000 per claim."""
+
+    condition: str
+    amount: float | None = Field(default=None, gt=0)
+    pct_si: float | None = Field(default=None, gt=0, le=100)
+
+
+class Coverage(BaseModel):
+    sum_insured: float | None = Field(default=None, gt=0)  # None = unlimited
+    sum_insured_used: float = Field(default=0, ge=0)  # already consumed this policy year
+    room_rent_limit: RoomRentLimit | None = None
+    consumables_covered: bool = False
+    sub_limits: list[SubLimit] = []
+    deductible: float = Field(default=0, ge=0)
+    copay_pct: float = Field(default=0, ge=0, le=100)
+
+
+class Bill(BaseModel):
+    lines: list[BillLine]
+    room_rate_per_day: float | None = Field(default=None, gt=0)
+    room_days: int | None = Field(default=None, ge=0)
+    flat_tariff_hospital: bool = False  # charges don't vary by room category: no proportionate deduction
+    condition: str | None = None

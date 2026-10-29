@@ -1,0 +1,41 @@
+{
+ "name": "ICU charges never take a proportionate deduction",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000,
+  "room_rent_limit": {
+   "kind": "per_day",
+   "value": 5000
+  }
+ },
+ "bill": {
+  "room_rate_per_day": 8000,
+  "room_days": 2,
+  "lines": [
+   {
+    "category": "room",
+    "amount": 16000
+   },
+   {
+    "category": "icu",
+    "amount": 60000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 30000
+   },
+   {
+    "category": "pharmacy",
+    "amount": 20000
+   }
+  ]
+ },
+ "expect": {
+  "billed": 126000,
+  "payable": 108750,
+  "deducted": {
+   "PAY-ROOMRENT": 6000,
+   "PAY-PROPORTIONATE": 11250
+  }
+ }
+}

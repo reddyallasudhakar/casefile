@@ -1,0 +1,19 @@
+{
+ "name": "No sum insured stated: no cap",
+ "source": "adapted from policygaido_backend synthetic test (unlimited-SI sentinel)",
+ "coverage": {},
+ "bill": {
+  "lines": [
+   {
+    "category": "professional_fees",
+    "amount": 1500000
+   }
+  ]
+ },
+ "expect": {
+  "payable": 1500000,
+  "deducted": {
+   "PAY-SICAP": 0
+  }
+ }
+}

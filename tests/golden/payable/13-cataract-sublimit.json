@@ -1,0 +1,41 @@
+{
+ "name": "Cataract sub-limit ₹40,000 caps a ₹63,000 bill",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000,
+  "sub_limits": [
+   {
+    "condition": "cataract",
+    "amount": 40000
+   }
+  ]
+ },
+ "bill": {
+  "condition": "cataract",
+  "lines": [
+   {
+    "category": "procedure_charges",
+    "amount": 35000
+   },
+   {
+    "category": "implants",
+    "amount": 20000
+   },
+   {
+    "category": "pharmacy",
+    "amount": 5000
+   },
+   {
+    "category": "room",
+    "amount": 3000
+   }
+  ]
+ },
+ "expect": {
+  "billed": 63000,
+  "payable": 40000,
+  "deducted": {
+   "PAY-SUBLIMIT": 23000
+  }
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "name": "Room within eligibility: nothing deducted",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000,
+  "room_rent_limit": {
+   "kind": "per_day",
+   "value": 5000
+  }
+ },
+ "bill": {
+  "room_rate_per_day": 4000,
+  "room_days": 4,
+  "lines": [
+   {
+    "category": "room",
+    "amount": 16000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 40000
+   }
+  ]
+ },
+ "expect": {
+  "payable": 56000,
+  "deducted": {
+   "PAY-ROOMRENT": 0,
+   "PAY-PROPORTIONATE": 0
+  }
+ }
+}

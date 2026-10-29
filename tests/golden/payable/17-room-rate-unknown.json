@@ -1,0 +1,27 @@
+{
+ "name": "Room limit exists but the room rate isn't known: flagged incomplete",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000,
+  "room_rent_limit": {
+   "kind": "per_day",
+   "value": 5000
+  }
+ },
+ "bill": {
+  "lines": [
+   {
+    "category": "room",
+    "amount": 32000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 40000
+   }
+  ]
+ },
+ "expect": {
+  "payable": 72000,
+  "complete": false
+ }
+}

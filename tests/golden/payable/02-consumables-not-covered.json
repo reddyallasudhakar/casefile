@@ -1,0 +1,38 @@
+{
+ "name": "Consumables and non-medical items removed",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000
+ },
+ "bill": {
+  "lines": [
+   {
+    "category": "room",
+    "amount": 20000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 30000
+   },
+   {
+    "category": "pharmacy",
+    "amount": 15000
+   },
+   {
+    "category": "consumables",
+    "amount": 5000
+   },
+   {
+    "category": "non_medical",
+    "amount": 1200
+   }
+  ]
+ },
+ "expect": {
+  "billed": 71200,
+  "payable": 65000,
+  "deducted": {
+   "PAY-NONPAYABLE": 6200
+  }
+ }
+}

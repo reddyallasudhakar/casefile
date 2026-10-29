@@ -6,7 +6,7 @@ full plan in `llm-training-lab/PROJECT_PLAN.md`.
 
 Legend: `[x]` done · `[~]` in progress / partly done · `[ ]` to do
 
-_Last updated: 2026-10-25 (after rules engine R1)_
+_Last updated: 2026-10-29 (after rules engine R2)_
 
 ---
 
@@ -88,11 +88,13 @@ copy every amount, date and ID exactly, as well as Gemini? And does GRPO improve
 - [x] Backend review: most money rules are only in LLM prompts; inconsistencies listed
 - [x] Plan written ([RULES_ENGINE.md](RULES_ENGINE.md))
 - [x] Continuous inception = earliest valid date (adopted in R1)
-- [ ] Decide: order of deductions (R2), products to model
+- [x] Order of deductions approved (2026-10-29)
+- [ ] Decide: products to model
 - [ ] Fill clause citations from the IRDAI Master Circular 2024 (hands-on reading)
 - [x] **R1 eligibility**: 20 golden cases passing, mutation-tested (`rules/`, `tests/golden/eligibility/`)
 - [x] **R4 CI** on GitHub Actions (golden cases + schema checks on every push)
-- [ ] R2 payable · R3 audit · R5 sampler injects insurer mistakes
+- [x] **R2 payable**: six-step settlement with audit trail, 18 golden cases, mutation-tested (`rules/payable.py`, `tests/golden/payable/`)
+- [ ] R3 audit (verdict on each insurer deduction) · R5 sampler injects insurer mistakes
 - Trigger: build when the adjudication task (T3) starts; minimal version (payable only) may be enough
 
 ## Later phases (from the project plan)
@@ -124,7 +126,7 @@ copy every amount, date and ID exactly, as well as Gemini? And does GRPO improve
 ## Open decisions
 
 - [x] F5 success bar (set in auto mode, committed `330706b` before results)
-- [~] Rules-engine defaults: continuous inception adopted; deduction order pending (R2)
+- [x] Rules-engine defaults: continuous inception adopted (R1), deduction order approved (R2)
 - [ ] Whether registration consent covers a private real-page test set
 
 ## Known issues and risks

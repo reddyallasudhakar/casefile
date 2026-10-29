@@ -1,0 +1,24 @@
+{
+ "name": "Deductible ₹25,000 then 20% co-pay: ₹60,000 (the other order would give ₹55,000)",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000,
+  "deductible": 25000,
+  "copay_pct": 20
+ },
+ "bill": {
+  "lines": [
+   {
+    "category": "professional_fees",
+    "amount": 100000
+   }
+  ]
+ },
+ "expect": {
+  "payable": 60000,
+  "deducted": {
+   "PAY-DEDUCTIBLE": 25000,
+   "PAY-COPAY": 15000
+  }
+ }
+}

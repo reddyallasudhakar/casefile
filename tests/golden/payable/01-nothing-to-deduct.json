@@ -1,0 +1,31 @@
+{
+ "name": "Plain bill, no limits: everything payable",
+ "source": "worked example from the rule",
+ "coverage": {
+  "sum_insured": 500000
+ },
+ "bill": {
+  "lines": [
+   {
+    "category": "room",
+    "amount": 20000
+   },
+   {
+    "category": "professional_fees",
+    "amount": 30000
+   },
+   {
+    "category": "pharmacy",
+    "amount": 15000
+   },
+   {
+    "category": "investigations",
+    "amount": 10000
+   }
+  ]
+ },
+ "expect": {
+  "billed": 75000,
+  "payable": 75000
+ }
+}

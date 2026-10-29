@@ -1,0 +1,21 @@
+{
+ "name": "10% co-pay on ₹12,345 = ₹1,234.50 → ₹1,235 (half up, not banker's rounding)",
+ "source": "worked example from the rule",
+ "coverage": {
+  "copay_pct": 10
+ },
+ "bill": {
+  "lines": [
+   {
+    "category": "pharmacy",
+    "amount": 12345
+   }
+  ]
+ },
+ "expect": {
+  "payable": 11110,
+  "deducted": {
+   "PAY-COPAY": 1235
+  }
+ }
+}
